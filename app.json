@@ -1,5 +1,6 @@
 {
   "expo": {
+    "debugger": false,
     "name": "projetoPP",
     "slug": "projetoPP",
     "version": "1.0.0",
@@ -15,16 +16,48 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lucascapelao.projetoPP",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.lucascapelao.projetoPP",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir que FIXX App acesse sua câmera"
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d9476227-6cc0-469e-b249-915c23633026"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d9476227-6cc0-469e-b249-915c23633026"
     }
   }
 }
