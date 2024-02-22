@@ -21,6 +21,9 @@ export default function LoginScreen({navigation}) {
     const [modalErro, setModalErro] = useState(false);
     const [mensagemErro, setMensagemErro] = useState('Mensagem Erro');
     var auxMsgError = ''
+    const loginTeste = () =>{
+        navigation.navigate('HomeScreen');
+    }
     const functionLogin = () =>{
         if(campoEmail != 'default' && campoSenha != 'default'){
             const auth = getAuth();
@@ -77,7 +80,7 @@ export default function LoginScreen({navigation}) {
             </View>
         </TouchableWithoutFeedback>
         <View style={styles.containerBtn}>
-            <TouchableHighlight style={styles.btnLoginCinza} onPress={functionLogin}>
+            <TouchableHighlight style={styles.btnLoginCinza} onPress={loginTeste}>
             <Text style={styles.textBtnCinza}>Entrar</Text>
             </TouchableHighlight> 
             <TouchableHighlight style={styles.btnLoginAmarelo} onPress={functionCadastro}>
