@@ -4,3 +4,6 @@ Autenticação local, plugin ja incluído
 - https://medium.com/nerd-for-tech/expo-local-authentication-face-id-and-touch-id-530e6a37e860
 - https://blog.logrocket.com/implementing-react-native-biometric-authentication-expo/
 - https://www.youtube.com/watch?v=8dkwk6d8vdY
+
+
+- para o arquivo server.js, se alterar no oracle commitar antes de testar

@@ -15,7 +15,7 @@ const logoIntroducao = require('../assets/6.png')
 const corAmarela = '#E2DA1A';
 const corCinzaPrincipal = '#20201C';
 
-const CadastroScreen = ({ navigation }) => {
+const CadastroScreen = ({ navigation, route }) => {
   const [campoEmail,setCampoEmail] = useState('default');
   const [campoSenha,setCampoSenha] = useState('default');
   const [campoConfirmarSenha,setCampoConfirmarSenha] = useState('default');
@@ -45,7 +45,13 @@ const CadastroScreen = ({ navigation }) => {
           const user = userCredential.user;
           console.log('logado')
           console.log(user)
-          navigation.navigate('CadastrarInfosScreen')
+          console.log(user.uid)
+          const { tipo } = route.params;
+          if(tipo == 'prestante'){
+            navigation.navigate('CadastrarPrestanteScreen',{idFirebaseParametro:user.uid,emailParametro:campoEmail})
+          }else{
+            navigation.navigate('CadastrarContratanteScreen',{idFirebaseParametro:user.uid,emailParametro:campoEmail})
+          }
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -73,7 +79,7 @@ const CadastroScreen = ({ navigation }) => {
     }
   }
   const backScreen = () =>{
-    navigation.navigate('LoginScreen')
+    navigation.goBack();
   }
 
   return (
@@ -91,6 +97,7 @@ const CadastroScreen = ({ navigation }) => {
                 <TextInput style={styles.inputModel} secureTextEntry={true} placeholder='Confirme a senha' onChangeText={(text)=>{setCampoConfirmarSenha(text)}} placeholderTextColor={'#828278'}></TextInput>
               </View>
               <TouchableHighlight onPress={validaCredenciais} style={styles.btnCredenciais}>
+              {/* <TouchableHighlight onPress={()=>{navigation.navigate('CadastrarInfosScreen')}} style={styles.btnCredenciais}> */}
                 <Text style={styles.textBtn}>Avançar</Text>
               </TouchableHighlight>
             </View>

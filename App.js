@@ -9,8 +9,12 @@ import LoginScreen from './components/LoginScreen.js';
 import { createStackNavigator } from '@react-navigation/stack';
 import CadastroScreen from './components/CadastroScreen.js';
 import IntroducaoScreen from './components/IntroducaoScreen.js';
-import CadastrarInfosScreen from './components/CadastrarInfosScreen.js';
+import CadastrarPrestanteScreen from './components/CadastrarPrestanteScreen.js';
+import CadastrarContratanteScreen from './components/CadastrarContratanteScreen.js';
 import CameraFront from './components/CameraScreen.js';
+import RelatoriosScreen from './components/RelatoriosScreen.js';
+import TipoUsuarioScreen from './components/TipoUsuarioScreen.js';
+
 
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('./assets/4.png');
@@ -24,13 +28,16 @@ const App = ({navigation,route}) => {
   return (
     <NavigationContainer>
       <StatusBar hidden></StatusBar>
-      <Stack.Navigator initialRouteName="IntroducaoScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="IntroducaoScreen" screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="CadastroScreen" component={CadastroScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="IntroducaoScreen" component={IntroducaoScreen} />
-        <Stack.Screen name="CadastrarInfosScreen" component={CadastrarInfosScreen} />
+        <Stack.Screen name="CadastrarPrestanteScreen" component={CadastrarPrestanteScreen} />
+        <Stack.Screen name="CadastrarContratanteScreen" component={CadastrarContratanteScreen} />
         <Stack.Screen name="CameraFront" component={CameraFront} />
+        <Stack.Screen name="RelatoriosScreen" component={RelatoriosScreen} />
+        <Stack.Screen name="TipoUsuarioScreen" component={TipoUsuarioScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,21 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableHighlight, TouchableOpacity, Button, StyleSheet, Image, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, Entypo, Foundation } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Entypo } from '@expo/vector-icons';
 import {Dimensions} from 'react-native';
-import { Foundation } from '@expo/vector-icons';
 import { Dropdown } from 'react-native-element-dropdown';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import {app} from '../firebaseConnection.js';
 import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
-import DateTimePicker from 'react-native-ui-datepicker';
 import DatePicker from 'react-native-ui-datepicker';
-import dayjs from 'dayjs';
-import { MaterialIcons } from '@expo/vector-icons';
 import { TextInputMask } from 'react-native-masked-text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { IP_DEBUG } from '@env'
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
 const db = getFirestore(app);
@@ -31,7 +27,7 @@ console.disableYellowBox = true;
 
 const CadastrarInfosScreen = ({ navigation, route }) => {
     const backScreen = () =>{
-        navigation.navigate('CadastroScreen')
+        navigation.goBack()
     }    
     const goToCamera = () =>{
         navigation.navigate('CameraFront')
@@ -43,6 +39,24 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         { label: 'Outro', value: '3' },
         { label: 'Prefiro não informar', value: '4' },
     ];
+
+
+    async function buscaGenero() {
+        try {
+            const response = await fetch(`http://${IP_DEBUG}:3000/buscaGenero`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            console.log('Resultado da consulta:', data);
+        } catch (error) {
+            console.error('Consulta erro query prestante:', error);
+        }
+    }
+    buscaGenero();
+    // function retornoGenero(resultSQL){}
 
     const opcoesGraduacao = [
         { label: 'Educação Infantil', value: '1' },
@@ -63,6 +77,10 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         { label: 'Eletrodomésticos', value: '9' },
     ];
 
+    const { idFirebaseParametro } = route.params;
+    console.log(idFirebaseParametro);
+    const { emailParametro } = route.params;
+    console.log(emailParametro);
     const { capturedImage } = route.params || {};
     const [valueGraduacao, setValueGraduacao] = useState(null);
     const [valueEspecialidade, setValueEspecialidade] = useState(null);
@@ -74,7 +92,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     const [btnConfirmarData, setBtnConfirmarData] = useState(false);
     const [cpf,setCpf] = useState('');
     const [telefone,setTelefone] = useState('');
-    const [email,setEmail] = useState('');
+    const [email,setEmail] = useState(emailParametro);
     const [nome, setNome] = useState(null);
     const [sobrenome, setSobrenome] = useState(null);
 
@@ -147,23 +165,10 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     //     }
     //   };
 
-        async function handleButtonClick() {
-            try {
-              const response = await fetch('http://192.168.1.117:3000/executarConsulta');
-              const data = await response.json();
-              console.log('Resultado da consulta:', data);
-              if(data != null){
-                console.log(data[0].nome)
-              }
-            } catch (error) {
-              console.error('Erro ao executar consulta:', error);
-            }
-          }
-
         async function inserirCadastro() {
             if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && fone != '' && email != ''){
                 try {
-                    const idFirebaseDB = 10000;
+                    const idFirebaseDB = idFirebaseParametro;
                     const nomeDB = nome;
                     const sobrenomeDB = sobrenome;
                     const generoDB = selectedValueGenero;
@@ -173,14 +178,14 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                     const especialidadeDB = selectedValueEspecialidade;
                     const foneDB = formatarFone(telefone);
                     const emailDB = email;
-                    const response = await fetch('http://192.168.0.6:3000/insertPrestante', {
+                    const response = await fetch(`http://${IP_DEBUG}:3000/insertPrestante`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB })
                     });
-                    console.log('operou')
+                    console.log(response)
                 }catch (error) {
                     console.error('Erro ao cadastrar:', error);
                 }
@@ -190,19 +195,19 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         }
 
         async function query() {
-        try {
-            const nome = 'Lucas'
-            const response = await fetch(`http://192.168.0.92:3000/query?nome=${nome}`, {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json'
-                }
-            });
-            const data = await response.json();
-            console.log('Resultado da consulta:', data);
-        } catch (error) {
-            console.error('Consulta erro:', error);
-        }
+            try {
+                const nome = 'Lucas'
+                const response = await fetch(`http://${IP_DEBUG}:3000/query?nome=${nome}`, {
+                    method: 'GET',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                console.log('Resultado da consulta:', data);
+            } catch (error) {
+                console.error('Consulta erro:', error);
+            }
         }
 
     return(
@@ -248,22 +253,6 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                             onFocus={() => setIsFocusGenero(true)}
                             onBlur={() => setIsFocusGenero(false)}
                             />
-                        {/* <Dropdown
-                            style={[styles.dropdown, isFocusGenero && { borderColor: corAmarela }]}
-                            placeholderStyle={styles.placeholderStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
-                            data={generoCadastro}
-                            maxHeight={300}
-                            labelField="label"
-                            valueField="value"
-                            placeholder={!isFocusGenero ? 'Gênero' : '...'}
-                            value={valueGenero}
-                            onFocus={() => setIsFocusGenero(true)}
-                            onBlur={() => setIsFocusGenero(false)}
-                            onChange={(itemGenero) => {
-                                setValueGenero(itemGenero.value);
-                                setIsFocusGenero(false);
-                              }}/> */}
                     </View>
                 </View>
                 <View style={styles.dividerBox}>

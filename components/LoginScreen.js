@@ -15,7 +15,7 @@ const iconLogin = require('../assets/4.png');
 const corAmarela = '#E2DA1A';
 const corCinzaPrincipal = '#20201C';
   
-export default function LoginScreen({navigation}) {  
+export default function LoginScreen({navigation,route}) {  
     const [campoEmail, setCampoEmail] = useState('default');
     const [campoSenha, setCampoSenha] = useState('default');
     const [modalErro, setModalErro] = useState(false);
@@ -31,7 +31,22 @@ export default function LoginScreen({navigation}) {
             .then((userCredential) => {
                 console.log('logado com sucesso')
                 const user = userCredential.user;
-                navigation.navigate('HomeScreen');
+                console.log(user.uid)
+                let auxIdFirebase = user.uid;
+                function aguardarLoginCompleto(){
+                    return new Promise((resolve,reject)=>{
+                        if(auxIdFirebase){
+                            window.idFirebaseGlobal = auxIdFirebase;
+                            resolve(window.idFirebaseGlobal);
+                            console.log(`id da promise ${window.idFirebaseGlobal}`)
+                        }
+                    });
+                }
+                aguardarLoginCompleto();
+                navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});
+                navigation.setOptions({
+                    gestureEnabled: false,
+                });
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -55,8 +70,8 @@ export default function LoginScreen({navigation}) {
         }
     }
     const functionCadastro = () =>{
-        // navigation.navigate('CadastroScreen');
-        navigation.navigate('CadastrarInfosScreen');
+        navigation.replace('TipoUsuarioScreen');
+        // navigation.navigate('CadastrarInfosScreen');
     }
     return (
         <NavigationContainer independent={true}>{
@@ -80,7 +95,7 @@ export default function LoginScreen({navigation}) {
             </View>
         </TouchableWithoutFeedback>
         <View style={styles.containerBtn}>
-            <TouchableHighlight style={styles.btnLoginCinza} onPress={loginTeste}>
+            <TouchableHighlight style={styles.btnLoginCinza} onPress={functionLogin}>
             <Text style={styles.textBtnCinza}>Entrar</Text>
             </TouchableHighlight> 
             <TouchableHighlight style={styles.btnLoginAmarelo} onPress={functionCadastro}>

@@ -16,7 +16,7 @@ const logoIntroducao = require('../assets/6.png')
 
 export default function IntroducaoScreen({navigation}){
     const nextScreen = () =>{
-        navigation.navigate('LoginScreen');
+        navigation.navigate('TipoUsuarioScreen');
     }
 
     return(

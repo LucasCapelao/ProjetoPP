@@ -51,6 +51,33 @@ app.get('/query', async (req, res)=>{
   }
 });
 
+app.get('/buscaGenero', async (req, res)=>{
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT * FROM COMBOGENERO`);
+    await connection.close();
+    res.json(result.rows);    
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
+//dar o commit no banco antes de qualquer consulta/alteração
+app.get('/calculaIndice', async (req, res) => {
+  try {
+    const { idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT count(*) FROM testeindices a WHERE a.idfirebase = :idFirebase`,[idFirebase]);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
 app.post('/insertCadastro', async (req, res) => {
   try {
     const { nome, idade } = req.body;
@@ -58,7 +85,7 @@ app.post('/insertCadastro', async (req, res) => {
     const result = await connection.execute(`INSERT INTO cadastro (nome, idade) VALUES (:nome, :idade)`, [nome, idade]);
     connection.commit();
     await connection.close();
-    res.json({ success: true });
+    res.send({ success: true });
   } catch (error) {
     console.error('Erro ao cadastrar:', error);
     res.status(500).json({ error: 'Erro ao cadastrar.' });
