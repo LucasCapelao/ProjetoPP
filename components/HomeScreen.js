@@ -8,10 +8,11 @@ import SolicitacoesScreen from '../components/SolicitacoesScreen.js';
 import ChatScreen from '../components/ChatScreen.js';
 import RelatoriosScreen from '../components/RelatoriosScreen.js';
 import RelatoriosDetailsScreen from '../components/RelatoriosDetailsScreen.js';
-import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LoginScreen from '../components/LoginScreen.js';
+import App from '../App.js';
+import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import {getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { IP_DEBUG } from '@env'
+import { TESTE_IP } from '@env'
 
 
 const Tab = createBottomTabNavigator();
@@ -39,8 +40,14 @@ const HomeTabs = ({ navigation }) => {
 };
 
 const HomeScreenContent = ({ navigation, route }) => {
-  const teste =()=>{
-    navigation.goBack();
+  const logout =()=>{
+    firebase.auth().signOut().then(() => {
+      navigation.replace('App');
+    })
+    .catch((error)=>{
+      alert("Erro ao deslogar "+error);
+    })
+
   }
   const [indicadorServicos, setIndicadorServico] = useState(0);
     useEffect(() => {
@@ -48,7 +55,7 @@ const HomeScreenContent = ({ navigation, route }) => {
         try {
           const idFirebase = window.idFirebaseGlobal;
           console.log(idFirebase)
-          const response = await fetch(`http://${IP_DEBUG}:3000/calculaIndice?idFirebase=${idFirebase}`, {
+          const response = await fetch(`http://${TESTE_IP}:3000/calculaIndice?idFirebase=${idFirebase}`, {
             method: 'GET',
             headers: {
             'Content-Type': 'application/json'
@@ -73,7 +80,7 @@ const HomeScreenContent = ({ navigation, route }) => {
     <View style={{ flex: 1, backgroundColor:'black' }}>
       <View style={styles.headerScreen}>
         <Text style={styles.titleHeader}>Olá, Lucas</Text>
-        <TouchableOpacity style={styles.boxIconExit} onPress={teste}>
+        <TouchableOpacity style={styles.boxIconExit} onPress={logout}>
           <MaterialCommunityIcons name="exit-to-app" size={40} color="#E2DA1A" />
         </TouchableOpacity>
       </View>
@@ -125,6 +132,8 @@ function ScreenView() {
         <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false}}/>
         <Stack.Screen name="Relatorios" component={RelatoriosScreen} options={{ headerShown: false}}/>
         <Stack.Screen name="RelatoriosDetails" component={RelatoriosDetailsScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name="App" component={App} options={{ headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

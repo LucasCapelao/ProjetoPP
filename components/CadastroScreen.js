@@ -7,6 +7,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { NavigationContainer } from '@react-navigation/native';
+import { TESTE_IP } from '@env';
 
 
 const auth = getAuth();
@@ -52,6 +53,22 @@ const CadastroScreen = ({ navigation, route }) => {
           }else{
             navigation.navigate('CadastrarContratanteScreen',{idFirebaseParametro:user.uid,emailParametro:campoEmail})
           }
+          async function insertTipoUsuario() {
+            try {
+                const idFirebaseDB = user.uid;
+                const tipoUsuarioDB = tipo.toUpperCase();
+                const response = await fetch(`http://${TESTE_IP}:3000/insertFirebaseXTipoUsuario`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idFirebaseDB, tipoUsuarioDB})
+                });
+            }catch (error) {
+                console.error('Erro ao cadastrar:', error);
+            }
+          }
+          insertTipoUsuario();
         })
         .catch((error) => {
           const errorCode = error.code;

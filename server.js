@@ -38,6 +38,47 @@ app.post('/insertPrestante', async (req, res) => {
   }
 });
 
+app.post('/insertContratante', async (req, res) => {
+  try {
+    const { idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB } = req.body;
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`INSERT INTO CONTRATANTES (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, cep, uf, municipio, bairro, rua, numero, complemento, fone, email) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento, :fone, :email)`, {idFirebase: idFirebaseDB, nome: nomeDB, sobrenome: sobrenomeDB, genero: generoDB, dataNascimento: dataNascimentoDB, cpf: cpfDB, cep: cepDB, uf: ufDB, municipio: municipioDB, bairro: bairroDB, rua: ruaDB, numero: numeroDB, complemento: complementoDB, fone: foneDB, email: emailDB});
+    connection.commit();
+    await connection.close();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao cadastrar:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar.' });
+  }
+});
+
+app.post('/insertFirebaseXTipoUsuario', async (req, res) => {
+  try {
+    const { idFirebaseDB, tipoUsuarioDB} = req.body;
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`INSERT INTO FIREBASEXTIPOUSUARIO (idFirebase, tipoUsuario) VALUES (:idFirebase, :tipoUsuario)`, {idFirebase: idFirebaseDB, tipoUsuario: tipoUsuarioDB});
+    connection.commit();
+    await connection.close();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao cadastrar:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar.' });
+  }
+});
+
+app.get('/verificaTipoUsuario', async (req, res)=>{
+  try {
+    const {idFirebase} = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`select * from FIREBASEXTIPOUSUARIO a where a.idFirebase = :idFirebase`, [idFirebase]);
+    await connection.close();
+    res.send(result.rows);    
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
 app.get('/query', async (req, res)=>{
   try {
     const {nome} = req.query;
@@ -55,6 +96,30 @@ app.get('/buscaGenero', async (req, res)=>{
   try {
     const connection = await oracledb.getConnection(dbConfig);
     const result = await connection.execute(`SELECT * FROM COMBOGENERO`);
+    await connection.close();
+    res.json(result.rows);    
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
+app.get('/buscaEspecialidades', async (req, res)=>{
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT * FROM COMBOESPECIALIDADES`);
+    await connection.close();
+    res.json(result.rows);    
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
+app.get('/buscaGraduacao', async (req, res)=>{
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT * FROM COMBOGRADUACAO`);
     await connection.close();
     res.json(result.rows);    
   } catch (error) {

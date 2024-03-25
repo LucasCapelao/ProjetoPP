@@ -9,7 +9,7 @@ import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 import DatePicker from 'react-native-ui-datepicker';
 import { TextInputMask } from 'react-native-masked-text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { IP_DEBUG } from '@env';
+import { TESTE_IP } from '@env';
 import buscaCep from '../src/APIs/BuscaCep.js';
 
 
@@ -29,21 +29,16 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         navigation.goBack()
     }    
     const goToCamera = () =>{
-        navigation.navigate('CameraFront')
+        navigation.navigate('CameraFront',{request:'CadastrarContratanteScreen'})
     }
 
-    const [generoCadastro,setGeneroCadastro] = useState([
-        { label: 'Masculino', value: '1' },
-        { label: 'Feminino', value: '2' },
-        { label: 'Outro', value: '3' },
-        { label: 'Prefiro não informar', value: '4' },
-    ]);
+    const [generoCadastro,setGeneroCadastro] = useState([]);
 
-    console.log(IP_DEBUG);
+    console.log(TESTE_IP);
     useEffect(() => {
         async function buscaGenero() {
             try {
-                const response = await fetch(`http://${IP_DEBUG}:3000/buscaGenero`, {
+                const response = await fetch(`http://${TESTE_IP}:3000/buscaGenero`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -140,6 +135,11 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         const result = fone.replace(/[()\-. \s]/g, '');
         return result;
     };
+
+    const formatarCep = (cep) =>{
+        const result = cep.replace('-','');
+        return result;
+    }
       
       
 
@@ -158,7 +158,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     //   };
 
         async function inserirCadastro() {
-            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && fone != '' && email != ''){
+            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && cep != '' && uf != '' && municipio != '' && bairro != '' && logradouro != '' && numero != '' && telefone != '' && email != ''){
                 try {
                     const idFirebaseDB = idFirebaseParametro;
                     const nomeDB = nome;
@@ -166,20 +166,25 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                     const generoDB = selectedValueGenero;
                     const dataNascimentoDB = formatarDataDB(date);
                     const cpfDB = formatarCpfDB(cpf);
-                    const graduacaoDB = selectedValueGraduacao;
-                    const especialidadeDB = selectedValueEspecialidade;
+                    const cepDB = formatarCep(cep);
+                    const ufDB = uf;
+                    const municipioDB = municipio;
+                    const bairroDB = bairro;
+                    const ruaDB = logradouro;
+                    const numeroDB = numero;
+                    const complementoDB = complemento;
                     const foneDB = formatarFone(telefone);
                     const emailDB = email;
-                    const response = await fetch(`http://${IP_DEBUG}:3000/insertPrestante`, {
+                    const response = await fetch(`http://${TESTE_IP}:3000/insertContratante`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB })
+                    body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB })
                     });
-                    console.log(response)
+                    console.log(JSON.stringify(response))
                 }catch (error) {
-                    console.error('Erro ao cadastrar:', error);
+                    console.error('Erro ao cadastrar contratante:', error);
                 }
             }else{
                 alert("Preencha todos os campos");
@@ -189,7 +194,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         async function query() {
             try {
                 const nome = 'Lucas'
-                const response = await fetch(`http://${IP_DEBUG}:3000/query?nome=${nome}`, {
+                const response = await fetch(`http://${TESTE_IP}:3000/query?nome=${nome}`, {
                     method: 'GET',
                     headers: {
                     'Content-Type': 'application/json'
@@ -218,8 +223,8 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                             </TouchableOpacity>
                         ):(
                             <View style={{width: '100%', height: '100%'}}>
-                                <Image style={{width: '100%', height: '100%', borderRadius: 10}} source={{ uri: capturedImage }}></Image>
-                                <TouchableHighlight onPress={()=>{navigation.navigate('CameraFront')}} style={{width: 40,height:40,backgroundColor: corAmarela, alignItems: 'center',justifyContent:'center', position: 'absolute',right: -15,bottom: -15, borderRadius: '100%'}}>
+                                <Image style={{width: '100%', height: '100%', borderRadius: 10, transform: [{ scaleX: -1 }]}} source={{ uri: capturedImage }}></Image>
+                                <TouchableHighlight onPress={()=>{navigation.navigate('CameraFront',{request:'CadastrarContratanteScreen'})}} style={{width: 40,height:40,backgroundColor: corAmarela, alignItems: 'center',justifyContent:'center', position: 'absolute',right: -15,bottom: -15, borderRadius: '100%'}}>
                                     <Foundation name="refresh" size={24} color="black" />
                                 </TouchableHighlight>
                             </View>

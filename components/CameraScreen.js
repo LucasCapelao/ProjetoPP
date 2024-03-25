@@ -6,13 +6,13 @@ import {Dimensions} from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const CameraFront = ({navigation}) =>{
+const CameraFront = ({navigation,route}) =>{
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
     useEffect(() => {
         (async () => {
-          const { status } = await Camera.requestPermissionsAsync();
+          const { status } = await Camera.requestCameraPermissionsAsync();
           setHasPermission(status === 'granted');
         })();
       }, []);
@@ -21,7 +21,8 @@ const CameraFront = ({navigation}) =>{
         if (cameraRef) {
           const photo = await cameraRef.takePictureAsync();
           setCapturedImage(photo.uri);
-          navigation.navigate('CadastrarInfosScreen', { capturedImage: photo.uri });
+          const {request} = route.params;
+          navigation.navigate(`${request}`,{ capturedImage: photo.uri });
         }
       };
     

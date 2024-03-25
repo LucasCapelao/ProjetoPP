@@ -26,7 +26,7 @@ const Stack = createStackNavigator();
 
 const App = ({navigation,route}) => {
   return (
-    <NavigationContainer>
+    <NavigationContainer independent={true}>
       <StatusBar hidden></StatusBar>
       <Stack.Navigator initialRouteName="IntroducaoScreen" screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />

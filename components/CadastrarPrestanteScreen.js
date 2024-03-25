@@ -11,7 +11,7 @@ import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 import DatePicker from 'react-native-ui-datepicker';
 import { TextInputMask } from 'react-native-masked-text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { IP_DEBUG } from '@env'
+import { TESTE_IP } from '@env'
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
 const db = getFirestore(app);
@@ -30,52 +30,83 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         navigation.goBack()
     }    
     const goToCamera = () =>{
-        navigation.navigate('CameraFront')
+        navigation.navigate('CameraFront',{request:'CadastrarPrestanteScreen'})
     }
 
-    const generoCadastro = [
-        { label: 'Masculino', value: '1' },
-        { label: 'Feminino', value: '2' },
-        { label: 'Outro', value: '3' },
-        { label: 'Prefiro não informar', value: '4' },
-    ];
-
-
-    async function buscaGenero() {
-        try {
-            const response = await fetch(`http://${IP_DEBUG}:3000/buscaGenero`, {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json'
-                }
-            });
-            const data = await response.json();
-            console.log('Resultado da consulta:', data);
-        } catch (error) {
-            console.error('Consulta erro query prestante:', error);
+    const [generoCadastro,setGeneroCadastro] = useState([]);
+    const [especialidadeCadastro,setEspecialidadeCadastro] = useState([]);
+    const [graduacaoCadastro,setGraduacaoCadastro] = useState([]);
+    useEffect(() => {
+        async function buscaGenero() {
+            try {
+                const response = await fetch(`http://${TESTE_IP}:3000/buscaGenero`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const generos = data.map(item => {
+                    return {
+                        value: item[0].toString(),
+                        label: item[1]
+                    };
+                });
+                setGeneroCadastro(generos);
+                console.log('Resultado da consulta:', data);
+            } catch (error) {
+                console.error('Consulta erro busca genero:', error);
+            }
         }
-    }
-    buscaGenero();
-    // function retornoGenero(resultSQL){}
 
-    const opcoesGraduacao = [
-        { label: 'Educação Infantil', value: '1' },
-        { label: 'Ensino Fundamental I', value: '2' },
-        { label: 'Ensino Fundamental II', value: '3' },
-        { label: 'Ensino Médio', value: '4' },
-    ];
+        async function buscaEspecialidades() {
+            try {
+                const response = await fetch(`http://${TESTE_IP}:3000/buscaEspecialidades`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const especialidades = data.map(item => {
+                    return {
+                        value: item[0].toString(),
+                        label: item[1]
+                    };
+                });
+                setEspecialidadeCadastro(especialidades);
+                console.log('Resultado da consulta:', data);
+            } catch (error) {
+                console.error('Consulta erro busca especialidades:', error);
+            }
+        }
 
-    const opcoesEspecialidades = [
-        { label: 'Carpintaria', value: '1' },
-        { label: 'Encanamento', value: '2' },
-        { label: 'Elétrica', value: '3' },
-        { label: 'Pintura', value: '4' },
-        { label: 'Jardinagem', value: '5' },
-        { label: 'Faxina', value: '6' },
-        { label: 'Reparos Gerais', value: '7' },
-        { label: 'Marcenaria', value: '8' },
-        { label: 'Eletrodomésticos', value: '9' },
-    ];
+        async function buscaGraduacao() {
+            try {
+                const response = await fetch(`http://${TESTE_IP}:3000/buscaGraduacao`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const graduacao = data.map(item => {
+                    return {
+                        value: item[0].toString(),
+                        label: item[1]
+                    };
+                });
+                setGraduacaoCadastro(graduacao);
+                console.log('Resultado da consulta:', data);
+            } catch (error) {
+                console.error('Consulta erro busca graduacao:', error);
+            }
+        }
+
+        buscaGenero();
+        buscaEspecialidades();
+        buscaGraduacao();
+    }, []);
 
     const { idFirebaseParametro } = route.params;
     console.log(idFirebaseParametro);
@@ -166,7 +197,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     //   };
 
         async function inserirCadastro() {
-            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && fone != '' && email != ''){
+            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && telefone != '' && email != ''){
                 try {
                     const idFirebaseDB = idFirebaseParametro;
                     const nomeDB = nome;
@@ -178,7 +209,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                     const especialidadeDB = selectedValueEspecialidade;
                     const foneDB = formatarFone(telefone);
                     const emailDB = email;
-                    const response = await fetch(`http://${IP_DEBUG}:3000/insertPrestante`, {
+                    const response = await fetch(`http://${TESTE_IP}:3000/insertPrestante`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -197,7 +228,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         async function query() {
             try {
                 const nome = 'Lucas'
-                const response = await fetch(`http://${IP_DEBUG}:3000/query?nome=${nome}`, {
+                const response = await fetch(`http://${TESTE_IP}:3000/query?nome=${nome}`, {
                     method: 'GET',
                     headers: {
                     'Content-Type': 'application/json'
@@ -226,8 +257,8 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                             </TouchableOpacity>
                         ):(
                             <View style={{width: '100%', height: '100%'}}>
-                                <Image style={{width: '100%', height: '100%', borderRadius: 10}} source={{ uri: capturedImage }}></Image>
-                                <TouchableHighlight onPress={()=>{navigation.navigate('CameraFront')}} style={{width: 40,height:40,backgroundColor: corAmarela, alignItems: 'center',justifyContent:'center', position: 'absolute',right: -15,bottom: -15, borderRadius: '100%'}}>
+                                <Image style={{width: '100%', height: '100%', borderRadius: 10, transform: [{ scaleX: -1 }]}} source={{ uri: capturedImage }}></Image>
+                                <TouchableHighlight onPress={()=>{navigation.navigate('CameraFront',{request:'CadastrarPrestanteScreen'})}} style={{width: 40,height:40,backgroundColor: corAmarela, alignItems: 'center',justifyContent:'center', position: 'absolute',right: -15,bottom: -15, borderRadius: '100%'}}>
                                     <Foundation name="refresh" size={24} color="black" />
                                 </TouchableHighlight>
                             </View>
@@ -331,7 +362,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                                 style={[styles.dropGraduacao, isFocusGraduacao && { borderColor: corAmarela }]}
                                 placeholderStyle={styles.placeholderStyle}
                                 selectedTextStyle={styles.selectedTextStyle}
-                                data={opcoesGraduacao}
+                                data={graduacaoCadastro}
                                 labelField="label"
                                 valueField="value"
                                 placeholder={!isFocusGraduacao ? 'Graduação' : '...'}
@@ -350,7 +381,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                                 style={[styles.dropGraduacao, isFocusEspecialidade && { borderColor: corAmarela }]}
                                 placeholderStyle={styles.placeholderStyle}
                                 selectedTextStyle={styles.selectedTextStyle}
-                                data={opcoesEspecialidades}
+                                data={especialidadeCadastro}
                                 labelField="label"
                                 valueField="value"
                                 placeholder={!isFocusEspecialidade ? 'Especialidade' : '...'}

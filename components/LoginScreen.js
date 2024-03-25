@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import * as LocalAuthentication from 'expo-local-authentication';
+import {TESTE_IP} from '@env';
 
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('../assets/4.png');
@@ -24,6 +25,7 @@ export default function LoginScreen({navigation,route}) {
     const loginTeste = () =>{
         navigation.navigate('HomeScreen');
     }
+    const [tipoUsuario, setTipoUsuario] = useState('');
     const functionLogin = () =>{
         if(campoEmail != 'default' && campoSenha != 'default'){
             const auth = getAuth();
@@ -43,10 +45,28 @@ export default function LoginScreen({navigation,route}) {
                     });
                 }
                 aguardarLoginCompleto();
-                navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});
-                navigation.setOptions({
-                    gestureEnabled: false,
-                });
+                async function verificaTipoUsuario() {
+                    try {
+                        const idFirebaseXTipoUsuario = auxIdFirebase;
+                        const response = await fetch(`http://${TESTE_IP}:3000/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
+                            method: 'GET',
+                            headers: {
+                            'Content-Type': 'application/json'
+                            }
+                        });
+                        const data = await response.json();
+                        console.log('Resultado da consulta ifxtu:', data[0][2]);
+                        setTipoUsuario(data[0][2]);
+                    } catch (error) {
+                        console.error('Consulta erro ifxtu:', error);
+                    }
+                }
+                verificaTipoUsuario();
+                if(tipoUsuario == "PRESTANTE"){
+                    navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});
+                }else{
+                    navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});                    
+                }
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -61,6 +81,7 @@ export default function LoginScreen({navigation,route}) {
                     setModalErro(true)
                 }else{
                     setMensagemErro('Algo deu errado, tente novamente')
+                    console.log(errorMessage)
                     setModalErro(true)
                 }
             });
