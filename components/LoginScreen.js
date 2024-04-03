@@ -9,12 +9,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import * as LocalAuthentication from 'expo-local-authentication';
-import {TESTE_IP} from '@env';
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('../assets/4.png');
-const corAmarela = '#E2DA1A';
-const corCinzaPrincipal = '#20201C';
   
 export default function LoginScreen({navigation,route}) {  
     const [campoEmail, setCampoEmail] = useState('default');
@@ -23,7 +21,7 @@ export default function LoginScreen({navigation,route}) {
     const [mensagemErro, setMensagemErro] = useState('Mensagem Erro');
     var auxMsgError = ''
     const loginTeste = () =>{
-        navigation.navigate('HomeScreen');
+        navigation.navigate('HomeScreen',{processamentoAtivo:true});
     }
     const [tipoUsuario, setTipoUsuario] = useState('');
     const functionLogin = () =>{
@@ -48,7 +46,7 @@ export default function LoginScreen({navigation,route}) {
                 async function verificaTipoUsuario() {
                     try {
                         const idFirebaseXTipoUsuario = auxIdFirebase;
-                        const response = await fetch(`http://${TESTE_IP}:3000/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
+                        const response = await fetch(`http://${IpAtual}:3000/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
                             method: 'GET',
                             headers: {
                             'Content-Type': 'application/json'
@@ -57,16 +55,17 @@ export default function LoginScreen({navigation,route}) {
                         const data = await response.json();
                         console.log('Resultado da consulta ifxtu:', data[0][2]);
                         setTipoUsuario(data[0][2]);
+                        console.log(tipoUsuario);
                     } catch (error) {
                         console.error('Consulta erro ifxtu:', error);
                     }
                 }
                 verificaTipoUsuario();
-                if(tipoUsuario == "PRESTANTE"){
-                    navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});
-                }else{
-                    navigation.navigate('HomeScreen',{idFirebaseParametro:auxIdFirebase});                    
-                }
+                // if(tipoUsuario == 'PRESTANTE'){
+                    navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase});
+                // }else{
+                    // navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase});                    
+                // }
             })
             .catch((error) => {
                 const errorCode = error.code;

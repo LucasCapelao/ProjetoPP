@@ -11,17 +11,14 @@ import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 import DatePicker from 'react-native-ui-datepicker';
 import { TextInputMask } from 'react-native-masked-text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { TESTE_IP } from '@env'
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 
 const db = getFirestore(app);
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const lineDividerWidth = windowWidth - 100;
-const logoIntroducao = require('../assets/6.png')
-const corAmarela = '#E2DA1A';
-const corCinzaPrincipal = '#20201C';
-const corCinzaSecundaria = '#828278'
+const logoIntroducao = require('../assets/6.png');
 const statusBarHeight = StatusBar.currentHeight;
 console.disableYellowBox = true;
 
@@ -39,7 +36,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     useEffect(() => {
         async function buscaGenero() {
             try {
-                const response = await fetch(`http://${TESTE_IP}:3000/buscaGenero`, {
+                const response = await fetch(`http://${IpAtual}:3000/buscaGenero`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -61,7 +58,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
 
         async function buscaEspecialidades() {
             try {
-                const response = await fetch(`http://${TESTE_IP}:3000/buscaEspecialidades`, {
+                const response = await fetch(`http://${IpAtual}:3000/buscaEspecialidades`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -83,7 +80,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
 
         async function buscaGraduacao() {
             try {
-                const response = await fetch(`http://${TESTE_IP}:3000/buscaGraduacao`, {
+                const response = await fetch(`http://${IpAtual}:3000/buscaGraduacao`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -209,7 +206,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                     const especialidadeDB = selectedValueEspecialidade;
                     const foneDB = formatarFone(telefone);
                     const emailDB = email;
-                    const response = await fetch(`http://${TESTE_IP}:3000/insertPrestante`, {
+                    const response = await fetch(`http://${IpAtual}:3000/insertPrestante`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -228,7 +225,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         async function query() {
             try {
                 const nome = 'Lucas'
-                const response = await fetch(`http://${TESTE_IP}:3000/query?nome=${nome}`, {
+                const response = await fetch(`http://${IpAtual}:3000/query?nome=${nome}`, {
                     method: 'GET',
                     headers: {
                     'Content-Type': 'application/json'

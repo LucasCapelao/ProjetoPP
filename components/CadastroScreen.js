@@ -7,14 +7,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { NavigationContainer } from '@react-navigation/native';
-import { TESTE_IP } from '@env';
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 
 
 const auth = getAuth();
 
 const logoIntroducao = require('../assets/6.png')
-const corAmarela = '#E2DA1A';
-const corCinzaPrincipal = '#20201C';
 
 const CadastroScreen = ({ navigation, route }) => {
   const [campoEmail,setCampoEmail] = useState('default');
@@ -57,7 +55,7 @@ const CadastroScreen = ({ navigation, route }) => {
             try {
                 const idFirebaseDB = user.uid;
                 const tipoUsuarioDB = tipo.toUpperCase();
-                const response = await fetch(`http://${TESTE_IP}:3000/insertFirebaseXTipoUsuario`, {
+                const response = await fetch(`http://${IpAtual}:3000/insertFirebaseXTipoUsuario`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -14,12 +14,13 @@ import CadastrarContratanteScreen from './components/CadastrarContratanteScreen.
 import CameraFront from './components/CameraScreen.js';
 import RelatoriosScreen from './components/RelatoriosScreen.js';
 import TipoUsuarioScreen from './components/TipoUsuarioScreen.js';
+import TesteTab from './components/TesteTab.js';
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from './src/Constants/Constantes.js';
+
 
 
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('./assets/4.png');
-const corAmarela = '#E2DA1A';
-const corCinzaPrincipal = '#20201C';
 console.disableYellowBox = true;
 
 const Stack = createStackNavigator();
@@ -38,6 +39,7 @@ const App = ({navigation,route}) => {
         <Stack.Screen name="CameraFront" component={CameraFront} />
         <Stack.Screen name="RelatoriosScreen" component={RelatoriosScreen} />
         <Stack.Screen name="TipoUsuarioScreen" component={TipoUsuarioScreen} />
+        <Stack.Screen name="TesteTab" component={TesteTab} />
       </Stack.Navigator>
     </NavigationContainer>
   );

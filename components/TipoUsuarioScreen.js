@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 
-const corAmarela = '#E2DA1A';
-const corCinzaPrincipal = '#20201C'; 
 
 const TipoUsuarioScreen = ({ navigation }) => {
     const goToLogin = () =>{

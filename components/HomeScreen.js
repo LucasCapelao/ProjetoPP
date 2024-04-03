@@ -11,13 +11,12 @@ import RelatoriosDetailsScreen from '../components/RelatoriosDetailsScreen.js';
 import LoginScreen from '../components/LoginScreen.js';
 import App from '../App.js';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import {getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { TESTE_IP } from '@env'
+import {getAuth, signOut } from 'firebase/auth';
+import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-const corAmarela = '#E2DA1A';
 const auth = getAuth();
 console.log(auth);
 // console.log(`id do firebase global: ${window.idFirebaseGlobal}`);
@@ -41,8 +40,11 @@ const HomeTabs = ({ navigation }) => {
 
 const HomeScreenContent = ({ navigation, route }) => {
   const logout =()=>{
-    firebase.auth().signOut().then(() => {
-      navigation.replace('App');
+    signOut(auth).then(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'App' }],
+      })
     })
     .catch((error)=>{
       alert("Erro ao deslogar "+error);
@@ -51,29 +53,23 @@ const HomeScreenContent = ({ navigation, route }) => {
   }
   const [indicadorServicos, setIndicadorServico] = useState(0);
     useEffect(() => {
-      const consultarRegistros = async () => {
-        try {
-          const idFirebase = window.idFirebaseGlobal;
-          console.log(idFirebase)
-          const response = await fetch(`http://${TESTE_IP}:3000/calculaIndice?idFirebase=${idFirebase}`, {
-            method: 'GET',
-            headers: {
-            'Content-Type': 'application/json'
-            }});
-          const data = await response.json();
-          setIndicadorServico(data)
-          console.log(`resultado do count: ${data}`);
-        } catch (error) {
-          console.error('Erro ao consultar registros:', error);
-        }
-        
-      };
-
-      consultarRegistros();
-      const twoMinutes = 2 * 60 * 1000; 
-      setInterval(() => {
+        const consultarRegistros = async () => {
+          try {
+            const idFirebase = window.idFirebaseGlobal;
+            console.log(idFirebase)
+            const response = await fetch(`http://${IpAtual}:3000/calculaIndice?idFirebase=${idFirebase}`, {
+              method: 'GET',
+              headers: {
+              'Content-Type': 'application/json'
+              }});
+            const data = await response.json();
+            setIndicadorServico(data)
+            console.log(`resultado do count: ${data}`);
+          } catch (error) {
+            console.error('Erro ao consultar registros:', error);
+          }
+        };
         consultarRegistros();
-      }, twoMinutes);
     }, []);
   return (
     <NavigationContainer independent={true}>
