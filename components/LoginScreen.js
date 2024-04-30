@@ -62,7 +62,7 @@ export default function LoginScreen({navigation,route}) {
                 }
                 verificaTipoUsuario();
                 // if(tipoUsuario == 'PRESTANTE'){
-                    navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase});
+                    navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase, tabelaSelct:"CONTRATANTES"});
                 // }else{
                     // navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase});                    
                 // }

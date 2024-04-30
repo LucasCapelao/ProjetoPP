@@ -10,7 +10,6 @@ const Stack = createStackNavigator();
 const TesteTab = ({ navigation }) => {
   return (
     <NavigationContainer independent={true}>
-
         <TabBar></TabBar>
     </NavigationContainer>
   );

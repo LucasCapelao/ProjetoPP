@@ -6,9 +6,9 @@ const app = express();
 app.use(bodyParser.json());
 
 const dbConfig = {
-    user: 'FIXXUSER',
-    password: 'FIXXUSER',
-    connectString: 'localhost:1521/XEPDB1'
+    user: 'SYSTEM',
+    password: 'FIXXDOCKER',
+    connectString: 'localhost:1521/xe'
 };
 
 
@@ -142,6 +142,37 @@ app.get('/calculaIndice', async (req, res) => {
     res.status(500).json({ error: 'Erro ao executar consulta.' });
   }
 });
+
+app.get('/buscaInfosUsuario', async (req, res) => {
+  try {
+    const { tabelaSelect, idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `SELECT a.nome FROM ${tabelaSelect} a WHERE a.idfirebase = :idFirebase`;
+    const result = await connection.execute(sqlStatement, [idFirebase]);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
+app.get('/buscaSolicitacoes', async (req, res) => {
+  try {
+    // const { idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    // const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.idfirebase = :idFirebase`;
+    const result = await connection.execute('SELECT * FROM SOLICITACOES');
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
 
 app.post('/insertCadastro', async (req, res) => {
   try {

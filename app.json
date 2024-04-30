@@ -18,6 +18,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lucascapelao.projetoPP",
+      "distributionCertificate": {
+        "path": "certs/ios/Certificados.p12",
+        "password": "FIXXUPLOAD"
+      },
       "runtimeVersion": {
         "policy": "appVersion"
       }

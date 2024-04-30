@@ -17,20 +17,7 @@ const RelatoriosScreen = ({ navigation }) => {
        <View style={styles.headerScreen}>
           <Text style={styles.textHeaderScreen}>Relatórios</Text>
         </View>
-
-      {/* BARRA DE NAVEGAÇÃO */}
-      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: 80, backgroundColor: 'black', borderColor: 'white', borderTopWidth: 0.17, position: 'absolute', bottom:0 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-        <Entypo name="home" size={40} color="#E2DA1A"/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-          <MaterialIcons name="chat" size={40} color="#E2DA1A" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Solicitacoes')}>
-          <MaterialIcons name="all-inbox" size={40} color="#E2DA1A" />
-        </TouchableOpacity>
-      </View>
-      {/* BARRA DE NAVEGAÇÃO */}
+        <Text style={{color:'white'}}>Tela Resolvida, navegacao correta, seguir para react native echarts</Text>
     </View>
   );
 };
@@ -47,7 +34,7 @@ const styles = StyleSheet.create({
 },
 textHeaderScreen:{
     fontSize: 28,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
 },
 });
 
