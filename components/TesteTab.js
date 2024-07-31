@@ -15,12 +15,4 @@ const TesteTab = ({ navigation }) => {
   );
 };
 
-const TesteContent = ({ navigation, route }) => {
-    return(
-        <View style={{color: 'white'}}>
-            Teste Screen Content
-        </View>
-    )
-}
-
 export default TesteTab;

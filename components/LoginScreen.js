@@ -46,7 +46,7 @@ export default function LoginScreen({navigation,route}) {
                 async function verificaTipoUsuario() {
                     try {
                         const idFirebaseXTipoUsuario = auxIdFirebase;
-                        const response = await fetch(`http://${IpAtual}:3000/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
+                        const response = await fetch(`http://${IpAtual}:3003/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
                             method: 'GET',
                             headers: {
                             'Content-Type': 'application/json'

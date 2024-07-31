@@ -28,7 +28,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             try {
               const idFirebase = window.idFirebaseGlobal;
               console.log(idFirebase)
-              const response = await fetch(`http://${IpAtual}:3000/calculaIndice?idFirebase=${idFirebase}`, {
+              const response = await fetch(`http://${IpAtual}:3003/calculaIndice?idFirebase=${idFirebase}`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             try {
               const idFirebase = window.idFirebaseGlobal;
               const tabelaSelect = "contratantes";
-              const response = await fetch(`http://${IpAtual}:3000/buscaInfosUsuario?tabelaSelect=${tabelaSelect}&idFirebase=${idFirebase}`, {
+              const response = await fetch(`http://${IpAtual}:3003/buscaInfosUsuario?tabelaSelect=${tabelaSelect}&idFirebase=${idFirebase}`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json'
@@ -56,9 +56,46 @@ export default function HomeScreenContent ({ navigation, route }) {
               console.error('Erro ao consultar registros, infos:', error);
             }
           };
-          consultarRegistros();
-          buscaInfosUsuarios();
+          // consultarRegistros();
+          // buscaInfosUsuarios();
+    
       }, []);
+
+      async function inserirPessoas() {
+        try {
+          const idFirebase = "kjsdfksdjfweirj3483nvr"
+          const nome = "Alfredo"
+          const sobrenome = "Silva"
+          const genero = 1
+          const dataNascimento = "29-01-2006"
+          const cpf = "78787878787"
+          const graduacao = 2
+          const especialidade = 8
+          const fone = 92165223;
+          const email = "aaa.a@aaa.com";
+          const idPessoa = 20;
+          const cep = 92875050
+          const uf = "SP";
+          const municipio = "SAO PAULO";
+          const bairro = "CENTRO";
+          const rua = "RUA DEZ";
+          const numero = 400;
+          const complemento = "";
+          const response = await fetch(`http://${IpAtual}:3003/insertPessoas?possuiEndereco=S`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, idPessoa, cep, uf, municipio, bairro, rua, numero, complemento, fone, email })
+          });
+          console.log(JSON.stringify(response))
+        }catch (error) {
+          console.error('Erro ao cadastrar pessoas:', error);
+        }
+      }
+
+    inserirPessoas();
+
     return (
       <NavigationContainer independent={true}>
       <View style={{ flex: 1, backgroundColor:'black' }}>

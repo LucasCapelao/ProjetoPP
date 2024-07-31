@@ -2,7 +2,9 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import {getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// Create a reference to 'mountains.jpg'
+// const mountainsRef = ref(storage, 'mountains.jpg');
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -18,9 +20,9 @@ const firebaseConfig = {
     measurementId: "G-GCLLWDW9BH"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const database = getFirestore();
 export const auth = getAuth();
+export const storage = getStorage(app);
 export {app,firebaseConfig}

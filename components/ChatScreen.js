@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { TouchableOpacity, Text } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { TouchableOpacity, Text, View } from 'react-native';
+import {Bubble, GiftedChat, Send} from 'react-native-gifted-chat';
 import { collection, addDoc, orderBy, query, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { auth, database } from '../firebaseConnection.js';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 export default function Chat() {
@@ -26,7 +26,7 @@ const onSignOut = () => {
             }}
             onPress={onSignOut}
           >
-            <AntDesign name="logout" size={24} color="#C5C5C7" style={{marginRight: 10}}/>
+            <AntDesign name="logout" size={24} color="#ddd" style={{marginRight: 10}}/>
           </TouchableOpacity>
         )
       });
@@ -51,6 +51,51 @@ const onSignOut = () => {
   return unsubscribe;
     }, []);
 
+    const renderSend = (props) => {
+      return (
+        <Send {...props}>
+          <View>
+            <MaterialCommunityIcons
+              name="send-circle"
+              style={{marginBottom: 5, marginRight: 5}}
+              size={36}
+              color="#E2DA1A"
+            />
+          </View>
+        </Send>
+      );
+    };
+
+    const renderBubble = (props) => {
+      return (
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor: '#E2DA1A',
+            },
+            left:{
+              backgroundColor: 'rgb(40,40,40)'
+            }
+          }}
+          textStyle={{
+            right: {
+              color: 'black',
+            },
+            left:{
+              color:'white',
+            }
+          }}
+        />
+      );
+    };
+
+    const scrollToBottomComponent = () => {
+      return(
+        <FontAwesome name='angle-double-down' size={22} color='#333' />
+      );
+    }
+
   const onSend = useCallback((messages = []) => {
       setMessages(previousMessages =>
         GiftedChat.append(previousMessages, messages)
@@ -66,26 +111,26 @@ const onSignOut = () => {
     }, []);
 
     return (
-      // <>
-      //   {messages.map(message => (
-      //     <Text key={message._id}>{message.text}</Text>
-      //   ))}
-      // </>
       <GiftedChat
         messages={messages}
         placeholder='Escreva algo...'
         showAvatarForEveryMessage={false}
         showUserAvatar={false}
         onSend={messages => onSend(messages)}
+        renderBubble={renderBubble}
+        alwaysShowSend
+        renderSend={renderSend}
+        scrollToBottom
+        scrollToBottomComponent={scrollToBottomComponent}
         messagesContainerStyle={{
-          backgroundColor: 'rgb(0,0,0)',
+          backgroundColor: 'rgb(255,255,255)',
         }}
-        scrollToBottomStyle={{color:'rgb(40,40,40)'}}
         textInputStyle={{
-          backgroundColor: 'rgb(40,40,40)',
+          backgroundColor: 'rgb(255,255,255)',
           borderRadius: 20,
-          marginRight: 20,
-          color:'white',
+          marginRight: 8,
+          color: 'black',
+          borderWidth: 0.5,
           fontWeight: '300',
           paddingTop: 9,
           paddingLeft: 10
@@ -93,7 +138,7 @@ const onSignOut = () => {
         inputContainerStyle={{backgroundColor:'#ddd'}}
         user={{
           _id: auth?.currentUser?.email,
-          avatar: 'https://i.pravatar.cc/300'
+          avatar: require('../assets/do-utilizador.png')
         }}
       />
     );

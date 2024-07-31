@@ -188,5 +188,31 @@ app.post('/insertCadastro', async (req, res) => {
   }
 });
 
-const PORT = 3000;
+app.post('/insertPessoas', async (req, res) => {
+  try {
+    const { idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email, idPessoa, cep, uf, municipio, bairro, rua, numero, complemento } = req.body;
+    const {possuiEndereco} = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const insertPessoa = `
+      INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email) 
+      VALUES (${idFirebase}, ${nome}, ${sobrenome}, ${genero}, TO_DATE(${dataNascimento}, 'DD-MM-YYYY'), ${cpf}, ${graduacao}, ${especialidade}, ${fone}, ${email})
+    `
+    console.log(insertPessoa);
+    let result = await connection.execute(`INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :graduacao, :especialidade, :fone, :email)`, [idFirebase, nome, sobrenome , genero, dataNascimento, cpf, graduacao, especialidade, fone, email]);
+    console.log(`result 1: ${JSON.stringify(result)}`)
+    if(possuiEndereco === 'S'){
+      // result = await connection.execute(`INSERT INTO ENDERECOS (idPessoa, cep, uf, municipio, bairro, rua, numero, complemento) VALUES (:idPessoa, :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento)`, [idPessoa, cep, uf, municipio, bairro, rua, numero, complemento]);
+      result = await connection.execute(`INSERT INTO ENDERECOS (idPessoa, cep, uf, municipio, bairro, rua, numero, complemento) VALUES ((SELECT id FROM PESSOAS WHERE idfirebase = :idFirebase), :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento)`, [idFirebase, cep, uf, municipio, bairro, rua, numero, complemento]);
+      console.log(`result 2: ${JSON.stringify(result)}`)
+    }
+    connection.commit();
+    await connection.close();
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Erro ao cadastrar tabela de pessoas:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar.' });
+  }
+});
+
+const PORT = 3003;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

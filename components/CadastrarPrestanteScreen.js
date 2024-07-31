@@ -12,9 +12,43 @@ import DatePicker from 'react-native-ui-datepicker';
 import { TextInputMask } from 'react-native-masked-text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
-// import DateTimePicker from '@react-native-community/datetimepicker';
+import {formatarCpfDB,formatarDataDB,formatarDataUsuario,formatarFone} from '../src/Converters/Converter.js'
+import { storage } from '../firebaseConnection.js';
 
-const db = getFirestore(app);
+// async function uploadImage(file) {
+//     if (!file) return;
+//     const storageRef = ref(storage, `images/${file}`);
+//     try {
+//         const snapshot = await uploadBytes(storageRef, file);
+//         console.log('Uploaded a blob or file!', snapshot);
+//         const downloadURL = await getDownloadURL(storageRef);
+//         console.log('File available at', downloadURL);
+//         return downloadURL;
+//     } catch (error) {
+//         console.error('Error uploading file:', error);
+//     }
+// }
+// uploadImage(logoIntroducao)
+
+const uploadImage = async () => {
+    console.log('entrou no upload')
+    const filename = '../assets/6.png'
+    console.log(filename)
+    console.log(capturedImage)
+    const storageRef = storage().ref(`images/${filename}`);
+    try {
+        const downloadURL = await storageRef.getDownloadURL();
+        console.log('File available at', downloadURL);
+
+        return downloadURL;
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
+}
+
+uploadImage()
+
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const lineDividerWidth = windowWidth - 100;
@@ -36,7 +70,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     useEffect(() => {
         async function buscaGenero() {
             try {
-                const response = await fetch(`http://${IpAtual}:3000/buscaGenero`, {
+                const response = await fetch(`http://${IpAtual}:3003/buscaGenero`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -58,7 +92,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
 
         async function buscaEspecialidades() {
             try {
-                const response = await fetch(`http://${IpAtual}:3000/buscaEspecialidades`, {
+                const response = await fetch(`http://${IpAtual}:3003/buscaEspecialidades`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -80,7 +114,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
 
         async function buscaGraduacao() {
             try {
-                const response = await fetch(`http://${IpAtual}:3000/buscaGraduacao`, {
+                const response = await fetch(`http://${IpAtual}:3003/buscaGraduacao`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -155,30 +189,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
             setModalCalendario(false);
         }
     }
-
-    const formatarDataDB = (dateString) => {
-        let parts = dateString.split(' ')[0].split('-');          
-        let formattedDate = parts.reverse().join('-');
-        return formattedDate;
-    };
-    const formatarDataUsuario = (dateString) => {
-        let parts = dateString.split(' ')[0].split('-');
-        let formattedDate = parts.reverse().join('/');          
-        return formattedDate;
-    };
-    
-    const formatarCpfDB = (cpf) => {
-        const result = cpf.replace(/[.-]/g, '');
-        return result;
-    };
-    
-    const formatarFone = (fone) => {
-        const result = fone.replace(/[()\-. \s]/g, '');
-        return result;
-    };
       
-      
-
     // const adicionarUsuario = async () => {
     //     try {
     //       const usersCollection = collection(db, 'users');
@@ -206,14 +217,14 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
                     const especialidadeDB = selectedValueEspecialidade;
                     const foneDB = formatarFone(telefone);
                     const emailDB = email;
-                    const response = await fetch(`http://${IpAtual}:3000/insertPrestante`, {
+                    const response = await fetch(`http://${IpAtual}:3003/insertPrestante`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB })
                     });
-                    console.log(response)
+                    // console.log(response)
                 }catch (error) {
                     console.error('Erro ao cadastrar:', error);
                 }
@@ -225,7 +236,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         async function query() {
             try {
                 const nome = 'Lucas'
-                const response = await fetch(`http://${IpAtual}:3000/query?nome=${nome}`, {
+                const response = await fetch(`http://${IpAtual}:3003/query?nome=${nome}`, {
                     method: 'GET',
                     headers: {
                     'Content-Type': 'application/json'

@@ -12,6 +12,7 @@ import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src
 
 const auth = getAuth();
 
+
 const logoIntroducao = require('../assets/6.png')
 
 const CadastroScreen = ({ navigation, route }) => {
@@ -55,7 +56,7 @@ const CadastroScreen = ({ navigation, route }) => {
             try {
                 const idFirebaseDB = user.uid;
                 const tipoUsuarioDB = tipo.toUpperCase();
-                const response = await fetch(`http://${IpAtual}:3000/insertFirebaseXTipoUsuario`, {
+                const response = await fetch(`http://${IpAtual}:3003/insertFirebaseXTipoUsuario`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

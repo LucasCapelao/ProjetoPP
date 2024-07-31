@@ -46,13 +46,19 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Permitir que FIXX App acesse sua câmera"
+          "cameraPermission": "Permitir que $(PRODUCT_NAME) acesse sua câmera"
         }
       ],
       [
         "expo-local-authentication",
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permitir que $(PRODUCT_NAME) acesse suas fotos"
         }
       ]
     ],

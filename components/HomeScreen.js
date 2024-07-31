@@ -57,7 +57,7 @@ const HomeScreenContent = ({ navigation, route }) => {
           try {
             const idFirebase = window.idFirebaseGlobal;
             console.log(idFirebase)
-            const response = await fetch(`http://${IpAtual}:3000/calculaIndice?idFirebase=${idFirebase}`, {
+            const response = await fetch(`http://${IpAtual}:3003/calculaIndice?idFirebase=${idFirebase}`, {
               method: 'GET',
               headers: {
               'Content-Type': 'application/json'
