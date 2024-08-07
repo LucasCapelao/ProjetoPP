@@ -49,7 +49,8 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 180,
         backgroundColor: corCinzaPrincipal,
-        borderRadius: 10
+        borderRadius: 10,
+        marginBottom: 30
     },
     boxCabecalho:{
         width: '100%',

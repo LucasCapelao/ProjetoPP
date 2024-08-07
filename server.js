@@ -160,10 +160,10 @@ app.get('/buscaInfosUsuario', async (req, res) => {
 
 app.get('/buscaSolicitacoes', async (req, res) => {
   try {
-    // const { idFirebase } = req.query;
+    const { idFirebase } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
-    // const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.idfirebase = :idFirebase`;
-    const result = await connection.execute('SELECT * FROM SOLICITACOES');
+    const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.id_prestante = (SELECT b.id FROM PESSOAS b WHERE b.idFirebase = '${idFirebase}')`;
+    const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
     res.send(result.rows);
@@ -211,6 +211,29 @@ app.post('/insertPessoas', async (req, res) => {
   } catch (error) {
     console.error('Erro ao cadastrar tabela de pessoas:', error);
     res.status(500).json({ error: 'Erro ao cadastrar.' });
+  }
+});
+
+app.get('/buscaServicos', async (req, res) => {
+  try {
+    const { idFirebase, mes, ano } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    let result = await connection.execute('SELECT id FROM PESSOAS WHERE idFirebase = :idFirebase',[idFirebase]);
+    let idPrestante = result.rows[0]
+    const sqlString = `
+      SELECT COUNT(dataServico)
+      FROM SERVICOS
+      WHERE TO_CHAR(dataServico, 'MM') = '${mes}' 
+        AND TO_CHAR(dataServico, 'YYYY') = '${ano}' 
+        AND idPrestante = '${idPrestante}'
+    `;
+    result = await connection.execute(sqlString);
+    console.log('Resultado da consulta server.js:', result.rows);
+    res.json(result.rows[0][0]);
+    await connection.close();
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: `Erro ao executar consulta.` });
   }
 });
 

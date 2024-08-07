@@ -144,8 +144,6 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     const { emailParametro } = route.params;
     console.log(emailParametro);
     const { capturedImage } = route.params || {};
-    const [valueGraduacao, setValueGraduacao] = useState(null);
-    const [valueEspecialidade, setValueEspecialidade] = useState(null);
     const [isFocusGenero, setIsFocusGenero] = useState(false);
     const [isFocusGraduacao, setIsFocusGraduacao] = useState(false);
     const [isFocusEspecialidade, setIsFocusEspecialidade] = useState(false);

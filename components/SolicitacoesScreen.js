@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 import { Octicons } from '@expo/vector-icons';
@@ -7,6 +7,27 @@ import ItemSolicitacao from './ItemSolicitacao.js';
 
 const SolicitacoesScreen = ({ navigation }) => {
   const [endereco,setEndereco] = useState('Av. Unisinos, 950 - Cristo Rei, São Leopoldo - RS, 93022-750');
+  const [solicitacoes, setSolicitacoes] = useState([]);
+
+  useEffect(() => {
+    async function buscaSolicitacoes() {
+      const idFirebase = 'aklsdqhduwnsvosidcce'
+      try {
+          const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoes?idFirebase=${idFirebase}`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          });
+          const data = await response.json();
+          console.log('Resultado da consulta:', data);
+          setSolicitacoes(data);
+      } catch (error) {
+          console.error('Consulta erro busca solicitacoes:', error);
+      }
+    }
+    buscaSolicitacoes();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -18,7 +39,17 @@ const SolicitacoesScreen = ({ navigation }) => {
         <Text style={{color: 'white', fontSize: 22, fontWeight:'bold', paddingLeft: 15}}>Últimas Solicitações</Text>
       </View>
       <ScrollView style={styles.containerSolicitacoes} contentContainerStyle={styles.contentContainerSolicitacoes}>
-        <ItemSolicitacao nome="João da Silva" dia="09" mes="nov" endereco={endereco} horario="10:30"/>
+        {/* <ItemSolicitacao nome="João da Silva" dia="09" mes="nov" endereco={endereco} horario="10:30"/> */}
+        {solicitacoes.map((solicitacao, index) => (
+          <ItemSolicitacao
+            key={index}
+            nome={`Solicitante ${solicitacao[0]}`} // Ajuste conforme necessário para exibir o nome correto
+            dia={solicitacao[1]}
+            mes={solicitacao[2]}
+            endereco={endereco}
+            horario={solicitacao[5]}
+          />
+        ))}
       </ScrollView>
     </View>
 
