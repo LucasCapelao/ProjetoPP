@@ -2,7 +2,7 @@ import {Dimensions} from 'react-native';
 
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
-export const IpAtual  = '192.168.0.6'; //ip
+export const IpAtual  = '172.20.90.182'; //ip
 export const Port = '3003';
 export const corAmarela = '#E2DA1A';
 export const corCinzaPrincipal = '#20201C'; //cinza escuro

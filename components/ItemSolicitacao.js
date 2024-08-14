@@ -13,7 +13,7 @@ export default function ItemSolicitacao(props){
         <View style={styles.boxInfos}>
             <View style={styles.boxLeft}>
                 <Text style={{color:corAmarela, fontSize:40, fontWeight:800}}>{props.dia}</Text>
-                <Text style={{color:corAmarela, fontSize:35, fontWeight:300, marginTop:-20}}>{props.mes}.</Text>
+                <Text style={{color:corAmarela, fontSize:35, fontWeight:300, marginTop:-20}}>{props.mes}</Text>
             </View>
             <View style={styles.boxCenter}>
                 <View style={styles.boxEndereco}>
@@ -32,10 +32,10 @@ export default function ItemSolicitacao(props){
                 </View>
             </View>
             <View style={styles.boxRight}>
-                <TouchableOpacity style={styles.coverActions}> 
+                <TouchableOpacity style={styles.coverActions} onPress={() => props.onUpdateAceitar(props.idSolicitacao)}> 
                     <FontAwesome name="check-circle" size={28} color={corVerdeIcon} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.coverActions}>
+                <TouchableOpacity style={styles.coverActions} onPress={() => props.onUpdateRecusar(props.idSolicitacao)}>
                     <MaterialIcons name="cancel" size={28} color={corVermelhaIcon} />
                 </TouchableOpacity>
             </View>

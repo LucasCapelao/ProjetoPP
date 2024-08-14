@@ -162,7 +162,28 @@ app.get('/buscaSolicitacoes', async (req, res) => {
   try {
     const { idFirebase } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
-    const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.id_prestante = (SELECT b.id FROM PESSOAS b WHERE b.idFirebase = '${idFirebase}')`;
+    // const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.id_prestante = (SELECT b.id FROM PESSOAS b WHERE b.idFirebase = '${idFirebase}')`;
+    const sqlStatement = `
+      SELECT 
+        c.nome,
+        c.sobrenome,
+        e.rua,
+        e.numero,
+        e.bairro,
+        e.municipio,
+        e.cep,
+        e.uf,
+        a.data_servico,
+        a.hora_servico,
+        a.id,
+        a.situacao
+      FROM SOLICITACOES a 
+      JOIN PESSOAS b ON a.id_prestante = b.id
+      JOIN PESSOAS c ON a.id_contratante = c.id
+      JOIN ENDERECOS e ON e.id = a.id_endereco
+      WHERE a.id_prestante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
+      AND a.situacao = 'P'
+      ORDER BY a.data_servico,a.data_enviado`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -173,6 +194,35 @@ app.get('/buscaSolicitacoes', async (req, res) => {
   }
 });
 
+app.put('/aceitarSolicitacao', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `UPDATE SOLICITACOES SET situacao = 'A' WHERE id = ${id}`
+    const result = await connection.execute(sqlStatement);
+    connection.commit();
+    await connection.close();
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Erro update solicitacao:', error);
+    res.status(500).json({ error: 'Erro update solicitacao' });
+  }
+});
+
+app.put('/recusarSolicitacao', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `UPDATE SOLICITACOES SET situacao = 'R' WHERE id = ${id}`
+    const result = await connection.execute(sqlStatement);
+    connection.commit();
+    await connection.close();
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Erro update solicitacao:', error);
+    res.status(500).json({ error: 'Erro update solicitacao' });
+  }
+});
 
 app.post('/insertCadastro', async (req, res) => {
   try {
@@ -234,6 +284,50 @@ app.get('/buscaServicos', async (req, res) => {
   } catch (error) {
     console.error('Erro ao executar consulta:', error);
     res.status(500).json({ error: `Erro ao executar consulta.` });
+  }
+});
+
+app.post('/insertEventos', async (req, res) => {
+  try {
+    const { idFirebase, mes, dia, horaInicio, horaFinal, descricao, situacao } = req.body;
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`INSERT INTO EVENTOS(idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao) VALUES(:idFirebase,:mes,:dia,:horaInicio,:horaFinal,:descricao,:situacao)`, [idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao]);
+    connection.commit();
+    await connection.close();
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Erro ao cadastrar:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar.' });
+  }
+});
+
+app.get('/buscaDias', async (req, res) => {
+  try {
+    const { mes } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `SELECT * FROM ${mes}`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar dias:', error);
+    res.status(500).json({ error: 'Erro ao buscar dias' });
+  }
+});
+
+app.get('/buscaEventos', async (req, res) => {
+  try {
+    const { dia,mes,idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `SELECT * FROM ${mes}`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar dias:', error);
+    res.status(500).json({ error: 'Erro ao buscar dias' });
   }
 });
 

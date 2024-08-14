@@ -1,33 +1,86 @@
 import React, {useState,useEffect} from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src/Constants/Constantes.js';
 import { Octicons } from '@expo/vector-icons';
 import ItemSolicitacao from './ItemSolicitacao.js';
+import { NumberInMonth } from '../src/functions/NumberInMonth';
 
 
 const SolicitacoesScreen = ({ navigation }) => {
-  const [endereco,setEndereco] = useState('Av. Unisinos, 950 - Cristo Rei, São Leopoldo - RS, 93022-750');
   const [solicitacoes, setSolicitacoes] = useState([]);
+  const [reload, setReload] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    async function buscaSolicitacoes() {
-      const idFirebase = 'aklsdqhduwnsvosidcce'
-      try {
-          const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoes?idFirebase=${idFirebase}`, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          });
-          const data = await response.json();
-          console.log('Resultado da consulta:', data);
-          setSolicitacoes(data);
-      } catch (error) {
-          console.error('Consulta erro busca solicitacoes:', error);
-      }
+  async function buscaSolicitacoes() {
+    const idFirebase = 'aklsdqhduwnsvosidcce'
+    try {
+        const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoes?idFirebase=${idFirebase}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        console.log('Resultado da consulta:', data);
+        const solicitacoesPendentes = data.filter(solicitacao => solicitacao[11] === 'P');
+        setSolicitacoes(solicitacoesPendentes);
+    } catch (error) {
+        console.error('Consulta erro busca solicitacoes:', error);
     }
-    buscaSolicitacoes();
-  }, []);
+  }
+  useEffect(() => {
+    buscaSolicitacoes().then(() => setRefreshing(false));
+  }, [reload]);
+  
+  const atualizaSolicitacoesPendentes = () =>{
+    setReload(prevReload => !prevReload);
+  }
+  async function aceitaSolicitacao(pId){
+    const id = pId
+    try {
+        const response = await fetch(`http://${IpAtual}:3003/aceitarSolicitacao?id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        setSolicitacoes(prevSolicitacoes =>
+          prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
+        );
+  
+        setReload(prevReload => !prevReload);
+        console.log('Resultado da consulta:', data);
+    } catch (error) {
+        console.error('Consulta erro busca solicitacoes:', error);
+    }
+  }
+
+  async function recusaSolicitacao(pId){
+    const id = pId
+    try {
+        const response = await fetch(`http://${IpAtual}:3003/recusarSolicitacao?id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        setSolicitacoes(prevSolicitacoes =>
+          prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
+        );
+  
+        setReload(prevReload => !prevReload);
+        console.log('Resultado da consulta:', data);
+    } catch (error) {
+        console.error('Consulta erro busca solicitacoes:', error);
+    }
+  }
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setReload(prevReload => !prevReload); // Alterna o estado de 'reload' para forçar a recarga
+  };
 
   return (
     <View style={styles.container}>
@@ -38,16 +91,18 @@ const SolicitacoesScreen = ({ navigation }) => {
         <Octicons name="arrow-switch" size={36} color={corAmarela} style={{ transform: [{ rotate: '90deg' }] }} />
         <Text style={{color: 'white', fontSize: 22, fontWeight:'bold', paddingLeft: 15}}>Últimas Solicitações</Text>
       </View>
-      <ScrollView style={styles.containerSolicitacoes} contentContainerStyle={styles.contentContainerSolicitacoes}>
-        {/* <ItemSolicitacao nome="João da Silva" dia="09" mes="nov" endereco={endereco} horario="10:30"/> */}
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={corAmarela} />} style={styles.containerSolicitacoes} contentContainerStyle={styles.contentContainerSolicitacoes}>
         {solicitacoes.map((solicitacao, index) => (
           <ItemSolicitacao
             key={index}
-            nome={`Solicitante ${solicitacao[0]}`} // Ajuste conforme necessário para exibir o nome correto
-            dia={solicitacao[1]}
-            mes={solicitacao[2]}
-            endereco={endereco}
-            horario={solicitacao[5]}
+            nome={`${solicitacao[0]} ${solicitacao[1]}`}
+            dia={solicitacao[8].substring(8,10)}
+            mes={NumberInMonth(parseInt(solicitacao[8].substring(5,7)),'N').toLowerCase()}
+            endereco={`${solicitacao[2]}, ${solicitacao[3]}, ${solicitacao[4]}, ${solicitacao[5]} - ${solicitacao[7]}`}
+            horario={solicitacao[9]}
+            onUpdateAceitar={() => aceitaSolicitacao(solicitacao[10])}
+            onUpdateRecusar={() => recusaSolicitacao(solicitacao[10])}
+            idSolicitacao={solicitacao[10]}
           />
         ))}
       </ScrollView>

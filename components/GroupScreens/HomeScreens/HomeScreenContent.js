@@ -128,7 +128,7 @@ export default function HomeScreenContent ({ navigation, route }) {
               <Text style={{color: corAmarela}}>Config.</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.containerActions}>
+          <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('AgendaScreen')}>
             <FontAwesome5 name="calendar-alt" size={53} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Minha Agenda</Text>
           </TouchableOpacity>
