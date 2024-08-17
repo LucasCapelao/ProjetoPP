@@ -32,9 +32,7 @@ const SolicitacoesScreen = ({ navigation }) => {
     buscaSolicitacoes().then(() => setRefreshing(false));
   }, [reload]);
   
-  const atualizaSolicitacoesPendentes = () =>{
-    setReload(prevReload => !prevReload);
-  }
+
   async function aceitaSolicitacao(pId){
     const id = pId
     try {

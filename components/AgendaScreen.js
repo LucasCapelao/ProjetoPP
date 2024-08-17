@@ -1,14 +1,31 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria } from '../src/Constants/Constantes';
+import { IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria } from '../src/Constants/Constantes';
 import Entypo from '@expo/vector-icons/Entypo';
 import { NumberInMonth } from '../src/functions/NumberInMonth';
 
 const AgendaScreen = ({ navigation }) => {
-    function goToDiasMes(pNumeroMes){
-        navigation.navigate('DiasMesScreen',pNumeroMes)
+    const [eventosPorMes, setEventosPorMes] = useState([])
+
+    async function buscaEventosPorMes(){
+        try {
+            const response = await fetch(`http://${IpAtual}:3003/buscaEventosPorMes`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            setEventosPorMes(data[0])
+            console.log('Resultado da consulta:', data);
+        } catch (error) {
+            console.error('Consulta erro busca eventos por mes:', error);
+        }
     }
 
+    useEffect(() => {
+        buscaEventosPorMes()
+    }, []);
 
     return (
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
@@ -18,51 +35,99 @@ const AgendaScreen = ({ navigation }) => {
             <View style={styles.containerMes}>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:1})}}>
                     <Text style={styles.textMes}>{NumberInMonth(1,'N')}</Text>
-                    <View style={styles.notificacaoMes}>
-                        <Text>10</Text>
-                    </View>
+                    {eventosPorMes[0] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[0]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:2})}}>
                     <Text style={styles.textMes}>{NumberInMonth(2,'N')}</Text>
-                    <View style={styles.notificacaoMes}>
-                        <Text>10</Text>
-                    </View>
+                    {eventosPorMes[1] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[1]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:3})}}>
                     <Text style={styles.textMes}>{NumberInMonth(3,'N')}</Text>
-                    <View style={styles.notificacaoMes}>
-                        <Text>10</Text>
-                    </View>
+                    {eventosPorMes[2] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[2]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:4})}}>
                     <Text style={styles.textMes}>{NumberInMonth(4,'N')}</Text>
-                    <View style={styles.notificacaoMes}>
-                        <Text>10</Text>
-                    </View>
+                    {eventosPorMes[3] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[3]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:5})}}>
                     <Text style={styles.textMes}>{NumberInMonth(5,'N')}</Text>
+                    {eventosPorMes[4] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[4]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:6})}}>
                     <Text style={styles.textMes}>{NumberInMonth(6,'N')}</Text>
+                    {eventosPorMes[5] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[5]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:7})}}>
                     <Text style={styles.textMes}>{NumberInMonth(7,'N')}</Text>
+                    {eventosPorMes[6] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[6]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:8})}}>
                     <Text style={styles.textMes}>{NumberInMonth(8,'N')}</Text>
+                    {eventosPorMes[7] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[7]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:9})}}>
                     <Text style={styles.textMes}>{NumberInMonth(9,'N')}</Text>
+                    {eventosPorMes[8] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[8]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:10})}}>
                     <Text style={styles.textMes}>{NumberInMonth(10,'N')}</Text>
+                    {eventosPorMes[9] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[9]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:11})}}>
                     <Text style={styles.textMes}>{NumberInMonth(11,'N')}</Text>
+                    {eventosPorMes[10] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[10]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.boxMes} onPress={()=>{navigation.navigate('DiasMesScreen',{numeroMes:12})}}>
                     <Text style={styles.textMes}>{NumberInMonth(12,'N')}</Text>
+                    {eventosPorMes[11] > 0 && (
+                        <View style={styles.notificacaoMes}>
+                            <Text>{eventosPorMes[11]}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.containerAdd} onPress={()=>{navigation.navigate('AdicionarEventoScreen')}}>

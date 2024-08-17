@@ -92,8 +92,8 @@ const AdicionarEventoScreen = ({ navigation }) => {
             let idFirebase = 'aklsdqhduwnsvosidcce'
             let mes = NumberInMonth(parseInt(selectedValueMes),'S')
             let dia = selectedValueDia
-            let horaInicio = selectedValueHoraInicio
-            let horaFinal = selectedValueHoraFinal
+            let horaInicio = selectedValueHoraInicio.replace(':','')
+            let horaFinal = selectedValueHoraFinal.replace(':','')
             let descricao = descricaoEvento
             let situacao = 'P'
             const response = await fetch(`http://${IpAtual}:3003/insertEventos`, {

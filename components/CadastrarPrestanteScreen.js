@@ -15,39 +15,6 @@ import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src
 import {formatarCpfDB,formatarDataDB,formatarDataUsuario,formatarFone} from '../src/Converters/Converter.js'
 import { storage } from '../firebaseConnection.js';
 
-// async function uploadImage(file) {
-//     if (!file) return;
-//     const storageRef = ref(storage, `images/${file}`);
-//     try {
-//         const snapshot = await uploadBytes(storageRef, file);
-//         console.log('Uploaded a blob or file!', snapshot);
-//         const downloadURL = await getDownloadURL(storageRef);
-//         console.log('File available at', downloadURL);
-//         return downloadURL;
-//     } catch (error) {
-//         console.error('Error uploading file:', error);
-//     }
-// }
-// uploadImage(logoIntroducao)
-
-const uploadImage = async () => {
-    console.log('entrou no upload')
-    const filename = '../assets/6.png'
-    console.log(filename)
-    console.log(capturedImage)
-    const storageRef = storage().ref(`images/${filename}`);
-    try {
-        const downloadURL = await storageRef.getDownloadURL();
-        console.log('File available at', downloadURL);
-
-        return downloadURL;
-    } catch (error) {
-        console.error('Error uploading file:', error);
-    }
-}
-
-uploadImage()
-
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -55,6 +22,27 @@ const lineDividerWidth = windowWidth - 100;
 const logoIntroducao = require('../assets/6.png');
 const statusBarHeight = StatusBar.currentHeight;
 console.disableYellowBox = true;
+
+const uploadImageToFirebase = async (uri) => {
+    const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+    const reference = storage().ref(fileName);
+
+    const task = reference.putFile(uri);
+
+    task.on('state_changed', (taskSnapshot) => {
+      console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+    });
+
+    try {
+      await task;
+      const url = await reference.getDownloadURL();
+      console.log('Image uploaded to Firebase successfully, download URL:', url);
+    } catch (e) {
+      console.error('Image upload failed:', e);
+    }
+  };
+
+  uploadImageToFirebase(logoIntroducao)
 
 const CadastrarInfosScreen = ({ navigation, route }) => {
     const backScreen = () =>{

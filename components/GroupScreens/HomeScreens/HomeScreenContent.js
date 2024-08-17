@@ -5,6 +5,10 @@ import { View, Text, Button, StyleSheet, TouchableHighlight, TouchableOpacity } 
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import {getAuth, signOut } from 'firebase/auth';
 import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria } from '../../../src/Constants/Constantes';
+// import storage from '@react-native-firebase/storage';
+
+// const logoIntroducao = require('../../../assets/4.png');
+
 
 const auth = getAuth();
 
@@ -24,41 +28,7 @@ export default function HomeScreenContent ({ navigation, route }) {
     const [indicadorServicos, setIndicadorServico] = useState(0);
     const [nomeUsuario,setNomeUsuario] = useState('');
       useEffect(() => {
-          const consultarRegistros = async () => {
-            try {
-              const idFirebase = window.idFirebaseGlobal;
-              console.log(idFirebase)
-              const response = await fetch(`http://${IpAtual}:3003/calculaIndice?idFirebase=${idFirebase}`, {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json'
-                }});
-              const data = await response.json();
-              setIndicadorServico(data)
-              console.log(`resultado do count: ${data}`);
-            } catch (error) {
-              console.error('Erro ao consultar registros:', error);
-            }
-          };
-          const buscaInfosUsuarios = async () => {
-            try {
-              const idFirebase = window.idFirebaseGlobal;
-              const tabelaSelect = "contratantes";
-              const response = await fetch(`http://${IpAtual}:3003/buscaInfosUsuario?tabelaSelect=${tabelaSelect}&idFirebase=${idFirebase}`, {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json'
-                }});
-              const data = await response.json();
-              console.log(`resultado do infos: ${data}`);
-              setNomeUsuario(data);
-            } catch (error) {
-              console.error('Erro ao consultar registros, infos:', error);
-            }
-          };
-          // consultarRegistros();
-          // buscaInfosUsuarios();
-    
+      
       }, []);
 
       async function inserirPessoas() {
@@ -95,6 +65,27 @@ export default function HomeScreenContent ({ navigation, route }) {
       }
 
     inserirPessoas();
+
+    // const uploadImageToFirebase = async (uri) => {
+    //   const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+    //   const reference = storage().ref(fileName);
+  
+    //   const task = reference.putFile(uri);
+  
+    //   task.on('state_changed', (taskSnapshot) => {
+    //     console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+    //   });
+  
+    //   try {
+    //     await task;
+    //     const url = await reference.getDownloadURL();
+    //     console.log('Image uploaded to Firebase successfully, download URL:', url);
+    //   } catch (e) {
+    //     console.error('Image upload failed:', e);
+    //   }
+    // };
+  
+    // uploadImageToFirebase(logoIntroducao)
 
     return (
       <NavigationContainer independent={true}>
