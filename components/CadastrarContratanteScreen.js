@@ -121,6 +121,38 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     //     }
     //   };
 
+    async function inserirPessoas() {
+        try {
+          const idFirebaseDB = idFirebaseParametro
+          const nomeDB = nome
+          const sobrenomeDB = sobrenome
+          const generoDB = selectedValueGenero
+          const dataNascimentoDB = formatarDataDB(date)
+          const cpfDB = formatarCpfDB(cpf)
+          const graduacaoDB = 0
+          const especialidadeDB = 0
+          const foneDB = formatarFone(telefone);
+          const emailDB = email;
+          const cepDB = formatarCep(cep)
+          const ufDB = uf
+          const municipioDB = municipio
+          const bairroDB = bairro
+          const ruaDB = logradouro
+          const numeroDB = numero
+          const complementoDB = complemento
+          const response = await fetch(`http://${IpAtual}:3003/insertPessoas?possuiEndereco=S`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB })
+          });
+          console.log(JSON.stringify(response))
+        }catch (error) {
+          console.error('Erro ao cadastrar pessoas:', error);
+        }
+      }
+
         async function inserirCadastro() {
             if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && cep != '' && uf != '' && municipio != '' && bairro != '' && logradouro != '' && numero != '' && telefone != '' && email != ''){
                 try {

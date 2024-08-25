@@ -160,6 +160,8 @@ const styles = StyleSheet.create({
   containerFiltros:{
     width: '98%',
     height: 100,
+    justifyContent:'center',
+    alignItems:'center'
     // backgroundColor: 'green'
   },
   dropdown:{

@@ -1,18 +1,43 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { View, Text, Button, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableHighlight, TouchableOpacity, Image, Alert } from 'react-native';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import {getAuth, signOut } from 'firebase/auth';
 import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria } from '../../../src/Constants/Constantes';
-// import storage from '@react-native-firebase/storage';
+import { uploadImageAsync, salvarImagem, uploadImageToStorage } from '../../../firebaseConnection';
+import * as ImagePicker from 'expo-image-picker';
 
-// const logoIntroducao = require('../../../assets/4.png');
 
+const imgFirebase = require('../../../assets/4.png')
 
 const auth = getAuth();
 
 export default function HomeScreenContent ({ navigation, route }) {
+  const idFirebase = window.idFirebaseGlobal;
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All, // Allow selection of all media types (images, videos)
+      allowsEditing: true, // Allow the user to edit the selected image
+      aspect: [4, 3], // Set the aspect ratio for editing (optional)
+      quality: 1, // Set the image quality (1 is the highest)
+    });
+  
+    if (!result.canceled && result.assets[0].uri) {
+      // Check if the user didn't cancel the selection and an image URI is available
+      console.log('Selected image URI:', result.assets[0].uri);
+  
+      try {
+        const downloadURL = await uploadImageToStorage(result.assets[0].uri, idFirebase);
+        console.log('Image uploaded successfully. Download URL:', downloadURL);
+      } catch (error) {
+        console.error('Upload failed:', error);
+      }
+    }
+  };
+   
     const logout =()=>{
       signOut(auth).then(() => {
         navigation.reset({
@@ -27,10 +52,8 @@ export default function HomeScreenContent ({ navigation, route }) {
     }
     const [indicadorServicos, setIndicadorServico] = useState(0);
     const [nomeUsuario,setNomeUsuario] = useState('');
-      useEffect(() => {
-      
-      }, []);
 
+ 
       async function inserirPessoas() {
         try {
           const idFirebase = "kjsdfksdjfweirj3483nvr"
@@ -64,28 +87,7 @@ export default function HomeScreenContent ({ navigation, route }) {
         }
       }
 
-    inserirPessoas();
-
-    // const uploadImageToFirebase = async (uri) => {
-    //   const fileName = uri.substring(uri.lastIndexOf('/') + 1);
-    //   const reference = storage().ref(fileName);
-  
-    //   const task = reference.putFile(uri);
-  
-    //   task.on('state_changed', (taskSnapshot) => {
-    //     console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
-    //   });
-  
-    //   try {
-    //     await task;
-    //     const url = await reference.getDownloadURL();
-    //     console.log('Image uploaded to Firebase successfully, download URL:', url);
-    //   } catch (e) {
-    //     console.error('Image upload failed:', e);
-    //   }
-    // };
-  
-    // uploadImageToFirebase(logoIntroducao)
+    // inserirPessoas();
 
     return (
       <NavigationContainer independent={true}>
@@ -102,7 +104,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             <Text style={{fontSize: 36, fontWeight: 'bold'}}>{indicadorServicos}</Text>
           </View>
           <View style={styles.lineOptions}>
-            <TouchableOpacity style={styles.boxLineOptions}>
+            <TouchableOpacity style={styles.boxLineOptions} onPress={()=>{navigation.navigate('AvaliacoesScreen')}}>
               <FontAwesome name="star" size={36} color={corAmarela} />
               <Text style={{color: corAmarela}}>Avaliações</Text>
             </TouchableOpacity>

@@ -424,7 +424,20 @@ app.get('/buscaEventosPorDia', async (req, res) => {
   }
 });
 
-
+app.get('/buscaAvaliacoes', async (req, res) => {
+  try {
+    const { idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `SELECT a.id, SYSDATE - a.diaavaliacao AS Dia, a.avaliacao, COUNT(*) OVER () AS total, p.nome, p.sobrenome FROM AVALIACOES a JOIN SERVICOS s ON s.id = a.idServico JOIN PESSOAS p ON p.id = s.idPrestante WHERE p.idFirebase='${idFirebase}'`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar avaliacoes:', error);
+    res.status(500).json({ error: 'Erro ao buscar avaliacoes' });
+  }
+});
 
 const PORT = 3003;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

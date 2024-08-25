@@ -9,6 +9,7 @@ import AgendaScreen from '../../AgendaScreen.js';
 import AdicionarEventoScreen from '../../AdicionarEvento.js';
 import DiasMesScreen from '../../DiasMesScreen.js';
 import DetailsDiaScreen from '../../DetailsDiaScreen.js';
+import AvaliacoesScreen from '../../AvaliacoesScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function HomeScreenView() {
           <Stack.Screen name="AdicionarEventoScreen" component={AdicionarEventoScreen} options={{ headerShown: false}}/>
           <Stack.Screen name="DiasMesScreen" component={DiasMesScreen} options={{ headerShown: false}}/>
           <Stack.Screen name="DetailsDiaScreen" component={DetailsDiaScreen} options={{ headerShown: false}}/>
+          <Stack.Screen name="AvaliacoesScreen" component={AvaliacoesScreen} options={{ headerShown: false}}/>
         </Stack.Navigator>
     //   </NavigationContainer>
     );

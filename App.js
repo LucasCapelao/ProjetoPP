@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Dimensions, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, TouchableHighlight} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Dimensions, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, TouchableHighlight, LogBox} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './components/HomeScreen.js';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +18,7 @@ import TesteTab from './components/TesteTab.js';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from './src/Constants/Constantes.js';
 
 
-
+LogBox.ignoreLogs([10000000000000000000000]);
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('./assets/4.png');
 console.disableYellowBox = true;

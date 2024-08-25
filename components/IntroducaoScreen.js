@@ -25,10 +25,10 @@ export default function IntroducaoScreen({navigation}){
                 <Text style={styles.title}>Seja Bem-Vindo</Text>
             </View>
             <View style={styles.regionLeft}>
-                <Text style={styles.textNormal}>Olá, este aplicativo foi feito para <Text style={styles.textAmarelo}>anuncio e aquisição de serviços informais domésticos</Text></Text>
+                <Text style={styles.textNormal}>Olá, este aplicativo foi feito para o<Text style={styles.textAmarelo}>anúncio e aquisição de serviços informais</Text></Text>
             </View>
             <View style={styles.regionRight}>
-                <Text style={styles.textNormalRight}>Você pode se cadastrar tanto como um <Text style={styles.textAmarelo}>coolaborador</Text> quanto como um <Text style={styles.textAmarelo}>contratante</Text></Text>
+                <Text style={styles.textNormalRight}>Você pode se cadastrar tanto como um <Text style={styles.textAmarelo}>prestador</Text> quanto como um <Text style={styles.textAmarelo}>contratante</Text></Text>
             </View>
             <Image style={styles.logoIntroducao} source={logoIntroducao}></Image>
             <TouchableOpacity style={styles.btnLoginAmarelo} onPress={nextScreen}>
