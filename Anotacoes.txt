@@ -38,3 +38,4 @@ create table ENDERECOS(
     CONSTRAINT fk_idPessoa FOREIGN KEY (idPessoa) REFERENCES PESSOAS(id)
 );
 
+idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB, tipoUsuarioDB, fotoPerfilDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB

@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Dimensions, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, TouchableHighlight, LogBox} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import HomeScreen from './components/HomeScreen.js';
 import { useNavigation } from '@react-navigation/native';
 import LoginScreen from './components/LoginScreen.js';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -14,11 +13,12 @@ import CadastrarContratanteScreen from './components/CadastrarContratanteScreen.
 import CameraFront from './components/CameraScreen.js';
 import RelatoriosScreen from './components/RelatoriosScreen.js';
 import TipoUsuarioScreen from './components/TipoUsuarioScreen.js';
-import TesteTab from './components/TesteTab.js';
+import TabBarPrestanteView from './components/TabBarPrestanteView.js';
+import TabBarContratanteView from './components/TabBarContratanteView.js';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from './src/Constants/Constantes.js';
 
 
-LogBox.ignoreLogs([10000000000000000000000]);
+LogBox.ignoreLogs([1000000000000000]);
 const statusBarHeight = StatusBar.currentHeight;
 const iconLogin = require('./assets/4.png');
 console.disableYellowBox = true;
@@ -29,7 +29,7 @@ const App = ({navigation,route}) => {
   return (
     <NavigationContainer independent={true}>
       <StatusBar hidden></StatusBar>
-      <Stack.Navigator initialRouteName="IntroducaoScreen" screenOptions={{ headerShown: false, gestureEnabled: false }}>
+      <Stack.Navigator initialRouteName="TabBarContratanteView" screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <Stack.Screen name="CadastroScreen" component={CadastroScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="IntroducaoScreen" component={IntroducaoScreen} />
@@ -38,7 +38,8 @@ const App = ({navigation,route}) => {
         <Stack.Screen name="CameraFront" component={CameraFront} />
         <Stack.Screen name="RelatoriosScreen" component={RelatoriosScreen} />
         <Stack.Screen name="TipoUsuarioScreen" component={TipoUsuarioScreen} />
-        <Stack.Screen name="TesteTab" component={TesteTab} />
+        <Stack.Screen name="TabBarPrestanteView" component={TabBarPrestanteView} />
+        <Stack.Screen name="TabBarContratanteView" component={TabBarContratanteView} />
       </Stack.Navigator>
     </NavigationContainer>
   );

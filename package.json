@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "expo prebuild",
     "start": "nodemon server.js",
+    "startExpo": "npx expo start --go",
     "startAntigo": "concurrently \"nodemon server.js\" \"expo start\"",
     "startMac": "concurrently \"nodemon server.js\" \"expo start --ios\"",
     "android": "expo run:android",

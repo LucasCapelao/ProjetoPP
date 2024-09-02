@@ -121,7 +121,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
     //     }
     //   };
 
-    async function inserirPessoas() {
+    async function inserirCadastro() {
         try {
           const idFirebaseDB = idFirebaseParametro
           const nomeDB = nome
@@ -133,6 +133,8 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
           const especialidadeDB = 0
           const foneDB = formatarFone(telefone);
           const emailDB = email;
+          const tipoUsuarioDB = 2
+          const fotoPerfilDB = 'test este tets e'
           const cepDB = formatarCep(cep)
           const ufDB = uf
           const municipioDB = municipio
@@ -145,15 +147,16 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB })
+            body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB, tipoUsuarioDB, fotoPerfilDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB })
           });
           console.log(JSON.stringify(response))
+          navigation.replace('TabBarContratanteView')
         }catch (error) {
           console.error('Erro ao cadastrar pessoas:', error);
         }
       }
 
-        async function inserirCadastro() {
+        async function inserirCadastro2() {
             if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && cep != '' && uf != '' && municipio != '' && bairro != '' && logradouro != '' && numero != '' && telefone != '' && email != ''){
                 try {
                     const idFirebaseDB = idFirebaseParametro;

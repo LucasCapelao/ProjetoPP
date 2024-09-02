@@ -15,7 +15,7 @@ const DetailsDiaScreen = ({ navigation, route }) => {
     const [refreshing, setRefreshing] = useState(false);
 
     async function buscaEventos() {
-        let idFirebase = 'aklsdqhduwnsvosidcce'
+        let idFirebase = window.idFirebaseGlobal
         console.log(mes)
         console.log(dia)
         try {

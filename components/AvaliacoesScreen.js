@@ -14,7 +14,8 @@ const AvaliacoesScreen = ({ navigation }) => {
 
 
     async function buscaAvaliacoes() {
-        let idFirebase = 'aklsdqhduwnsvosidcce'
+        let idFirebase = window.idFirebaseGlobal;
+        console.log(idFirebase)
         try {
             const response = await fetch(`http://${IpAtual}:3003/buscaAvaliacoes?idFirebase=${idFirebase}`, {
                 method: 'GET',

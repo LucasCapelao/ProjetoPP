@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreenContent from './HomeScreenContent.js';
 import RelatoriosScreen from '../../RelatoriosScreen.js';
 import RelatoriosDetailsScreen from '../../RelatoriosDetailsScreen.js';
-import TabBar from '../../tabs/TabBar.js';
+import TabBar from '../../tabs/TabBarContratante.js';
 import AgendaScreen from '../../AgendaScreen.js';
 import AdicionarEventoScreen from '../../AdicionarEvento.js';
 import DiasMesScreen from '../../DiasMesScreen.js';

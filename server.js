@@ -11,16 +11,18 @@ const dbConfig = {
     connectString: 'localhost:1521/xe'
 };
 
-
-app.get('/executarConsulta', async (req, res)=>{
+app.get('/buscaTipoUsuario', async (req, res) => {
   try {
+    const { idFirebase } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute('select * from pessoas');
+    const sqlStatement = `SELECT tipoUsuario FROM PESSOAS WHERE idFirebase = '${idFirebase}'`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
-    res.send(result.rows);    
+    res.send(result.rows);
   } catch (error) {
-    console.error('Erro ao executar consulta:', error);
-    res.status(500).json({ error: 'Erro ao executar consulta.' });
+    console.error('Erro ao buscar tipo usuario:', error);
+    res.status(500).json({ error: 'Erro ao buscar tipo usuario' });
   }
 });
 
@@ -49,46 +51,6 @@ app.post('/insertContratante', async (req, res) => {
   } catch (error) {
     console.error('Erro ao cadastrar:', error);
     res.status(500).json({ error: 'Erro ao cadastrar.' });
-  }
-});
-
-app.post('/insertFirebaseXTipoUsuario', async (req, res) => {
-  try {
-    const { idFirebaseDB, tipoUsuarioDB} = req.body;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`INSERT INTO FIREBASEXTIPOUSUARIO (idFirebase, tipoUsuario) VALUES (:idFirebase, :tipoUsuario)`, {idFirebase: idFirebaseDB, tipoUsuario: tipoUsuarioDB});
-    connection.commit();
-    await connection.close();
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Erro ao cadastrar:', error);
-    res.status(500).json({ error: 'Erro ao cadastrar.' });
-  }
-});
-
-app.get('/verificaTipoUsuario', async (req, res)=>{
-  try {
-    const {idFirebase} = req.query;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`select * from FIREBASEXTIPOUSUARIO a where a.idFirebase = :idFirebase`, [idFirebase]);
-    await connection.close();
-    res.send(result.rows);    
-  } catch (error) {
-    console.error('Erro ao executar consulta:', error);
-    res.status(500).json({ error: 'Erro ao executar consulta.' });
-  }
-});
-
-app.get('/query', async (req, res)=>{
-  try {
-    const {nome} = req.query;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`select * from pessoas a where a.nome = :nome`, [nome]);
-    await connection.close();
-    res.send(result.rows);    
-  } catch (error) {
-    console.error('Erro ao executar consulta:', error);
-    res.status(500).json({ error: 'Erro ao executar consulta.' });
   }
 });
 
@@ -122,36 +84,6 @@ app.get('/buscaGraduacao', async (req, res)=>{
     const result = await connection.execute(`SELECT * FROM COMBOGRADUACAO`);
     await connection.close();
     res.json(result.rows);    
-  } catch (error) {
-    console.error('Erro ao executar consulta:', error);
-    res.status(500).json({ error: 'Erro ao executar consulta.' });
-  }
-});
-
-//dar o commit no banco antes de qualquer consulta/alteração
-app.get('/calculaIndice', async (req, res) => {
-  try {
-    const { idFirebase } = req.query;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`SELECT count(*) FROM testeindices a WHERE a.idfirebase = :idFirebase`,[idFirebase]);
-    console.log('Resultado da consulta server.js:', result.rows);
-    await connection.close();
-    res.send(result.rows);
-  } catch (error) {
-    console.error('Erro ao executar consulta:', error);
-    res.status(500).json({ error: 'Erro ao executar consulta.' });
-  }
-});
-
-app.get('/buscaInfosUsuario', async (req, res) => {
-  try {
-    const { tabelaSelect, idFirebase } = req.query;
-    const connection = await oracledb.getConnection(dbConfig);
-    const sqlStatement = `SELECT a.nome FROM ${tabelaSelect} a WHERE a.idfirebase = :idFirebase`;
-    const result = await connection.execute(sqlStatement, [idFirebase]);
-    console.log('Resultado da consulta server.js:', result.rows);
-    await connection.close();
-    res.send(result.rows);
   } catch (error) {
     console.error('Erro ao executar consulta:', error);
     res.status(500).json({ error: 'Erro ao executar consulta.' });
@@ -240,22 +172,28 @@ app.post('/insertCadastro', async (req, res) => {
 
 app.post('/insertPessoas', async (req, res) => {
   try {
-    const { idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email, idPessoa, cep, uf, municipio, bairro, rua, numero, complemento } = req.body;
+    const { idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB, tipoUsuarioDB, fotoPerfilDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB } = req.body;
     const {possuiEndereco} = req.query;
     const connection = await oracledb.getConnection(dbConfig);
+    // const insertPessoa = `
+    //   INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email, tipoUsuario, fotoPerfil) 
+    //   VALUES (${idFirebase}, ${nome}, ${sobrenome}, ${genero}, TO_DATE(${dataNascimento}, 'DD-MM-YYYY'), ${cpf}, ${graduacao}, ${especialidade}, ${fone}, ${email}, ${tipoUsuario}, ${fotoPerfil})
+    // `
     const insertPessoa = `
-      INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email) 
-      VALUES (${idFirebase}, ${nome}, ${sobrenome}, ${genero}, TO_DATE(${dataNascimento}, 'DD-MM-YYYY'), ${cpf}, ${graduacao}, ${especialidade}, ${fone}, ${email})
+      INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email, tipoUsuario, fotoPerfil) 
+      VALUES ('${idFirebaseDB}', '${nomeDB}', '${sobrenomeDB}', ${generoDB}, TO_DATE('${dataNascimentoDB}', 'DD-MM-YYYY'), ${cpfDB}, ${graduacaoDB}, ${especialidadeDB}, '${foneDB}', '${emailDB}', ${tipoUsuarioDB}, '${fotoPerfilDB}')
     `
     console.log(insertPessoa);
-    let result = await connection.execute(`INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :graduacao, :especialidade, :fone, :email)`, [idFirebase, nome, sobrenome , genero, dataNascimento, cpf, graduacao, especialidade, fone, email]);
+    // let result = await connection.execute(`INSERT INTO PESSOAS (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email, tipoUsuario, fotoPerfil) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :graduacao, :especialidade, :fone, :email, :tipoUsuario, :fotoPerfil)`, [idFirebase, nome, sobrenome , genero, dataNascimento, cpf, graduacao, especialidade, fone, email, tipoUsuario, fotoPerfil]);
+    let result = await connection.execute(insertPessoa);
+    connection.commit();
     console.log(`result 1: ${JSON.stringify(result)}`)
     if(possuiEndereco === 'S'){
       // result = await connection.execute(`INSERT INTO ENDERECOS (idPessoa, cep, uf, municipio, bairro, rua, numero, complemento) VALUES (:idPessoa, :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento)`, [idPessoa, cep, uf, municipio, bairro, rua, numero, complemento]);
-      result = await connection.execute(`INSERT INTO ENDERECOS (idPessoa, cep, uf, municipio, bairro, rua, numero, complemento) VALUES ((SELECT id FROM PESSOAS WHERE idfirebase = :idFirebase), :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento)`, [idFirebase, cep, uf, municipio, bairro, rua, numero, complemento]);
+      result = await connection.execute(`INSERT INTO ENDERECOS (idPessoa, cep, uf, municipio, bairro, rua, numero, complemento) VALUES ((SELECT id FROM PESSOAS WHERE idfirebase = :idFirebase), :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento)`, [idFirebaseDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB]);
+      connection.commit();
       console.log(`result 2: ${JSON.stringify(result)}`)
     }
-    connection.commit();
     await connection.close();
     res.send({ success: true });
   } catch (error) {
@@ -436,6 +374,21 @@ app.get('/buscaAvaliacoes', async (req, res) => {
   } catch (error) {
     console.error('Erro ao buscar avaliacoes:', error);
     res.status(500).json({ error: 'Erro ao buscar avaliacoes' });
+  }
+});
+
+app.get('/buscaConversas', async (req, res) => {
+  try {
+    const { idFirebase } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `SELECT c.id, c.idContratante, pc.nome, pc.sobrenome, c.idPrestante, pp.nome, pp.sobrenome FROM CONVERSAS c JOIN PESSOAS pc ON c.idContratante = pc.id JOIN PESSOAS pp ON c.idPrestante = pp.id WHERE pp.idFirebase = '${idFirebase}'`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar conversas:', error);
+    res.status(500).json({ error: 'Erro ao buscar conversas' });
   }
 });
 

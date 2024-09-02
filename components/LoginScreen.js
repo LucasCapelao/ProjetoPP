@@ -20,10 +20,31 @@ export default function LoginScreen({navigation,route}) {
     const [modalErro, setModalErro] = useState(false);
     const [mensagemErro, setMensagemErro] = useState('Mensagem Erro');
     var auxMsgError = ''
-    const loginTeste = () =>{
-        navigation.navigate('HomeScreen',{processamentoAtivo:true});
+    const [tipoUsuario, setTipoUsuario] = useState(0);
+    async function verificaTipoUsuario(pIdFirebase) {
+        try {
+            const response = await fetch(`http://${IpAtual}:3003/buscaTipoUsuario?idFirebase=${pIdFirebase}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            console.log('Resultado da consulta tipo usuario:', data[0][0]);
+            if(data[0][0] == 1){
+                navigation.replace('TabBarPrestanteView');
+                console.log('prestante')
+                window.tipoUsuario = 1
+            }else{
+                navigation.replace('TabBarContratanteView');     
+                console.log('contratante') 
+                window.tipoUsuario = 2       
+            }
+            return setTipoUsuario(data[0][0]);
+        } catch (error) {
+            console.error('Consulta erro tipo usuario:', error);
+        }
     }
-    const [tipoUsuario, setTipoUsuario] = useState('');
     const functionLogin = () =>{
         if(campoEmail != 'default' && campoSenha != 'default'){
             const auth = getAuth();
@@ -33,39 +54,8 @@ export default function LoginScreen({navigation,route}) {
                 const user = userCredential.user;
                 console.log(user.uid)
                 let auxIdFirebase = user.uid;
-                function aguardarLoginCompleto(){
-                    return new Promise((resolve,reject)=>{
-                        if(auxIdFirebase){
-                            window.idFirebaseGlobal = auxIdFirebase;
-                            resolve(window.idFirebaseGlobal);
-                            console.log(`id da promise ${window.idFirebaseGlobal}`)
-                        }
-                    });
-                }
-                aguardarLoginCompleto();
-                async function verificaTipoUsuario() {
-                    try {
-                        const idFirebaseXTipoUsuario = auxIdFirebase;
-                        const response = await fetch(`http://${IpAtual}:3003/verificaTipoUsuario?idFirebase=${idFirebaseXTipoUsuario}`, {
-                            method: 'GET',
-                            headers: {
-                            'Content-Type': 'application/json'
-                            }
-                        });
-                        const data = await response.json();
-                        console.log('Resultado da consulta ifxtu:', data[0][2]);
-                        setTipoUsuario(data[0][2]);
-                        console.log(tipoUsuario);
-                    } catch (error) {
-                        console.error('Consulta erro ifxtu:', error);
-                    }
-                }
-                verificaTipoUsuario();
-                // if(tipoUsuario == 'PRESTANTE'){
-                    navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase, tabelaSelct:"CONTRATANTES",userIdFirebase:user.id});
-                // }else{
-                    // navigation.replace('TesteTab',{idFirebaseParametro:auxIdFirebase});                    
-                // }
+                window.idFirebaseGlobal = auxIdFirebase;
+                verificaTipoUsuario(auxIdFirebase);
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -91,7 +81,6 @@ export default function LoginScreen({navigation,route}) {
     }
     const functionCadastro = () =>{
         navigation.replace('TipoUsuarioScreen');
-        // navigation.navigate('CadastrarInfosScreen');
     }
     return (
         <NavigationContainer independent={true}>{

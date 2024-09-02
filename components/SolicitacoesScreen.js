@@ -12,7 +12,7 @@ const SolicitacoesScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   async function buscaSolicitacoes() {
-    const idFirebase = 'aklsdqhduwnsvosidcce'
+    const idFirebase = window.idFirebaseGlobal
     try {
         const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoes?idFirebase=${idFirebase}`, {
             method: 'GET',
