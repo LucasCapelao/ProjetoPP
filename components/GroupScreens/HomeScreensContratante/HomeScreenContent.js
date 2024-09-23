@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { View, Text, Button, StyleSheet, TouchableHighlight, TouchableOpacity, Image, Alert } from 'react-native';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import {getAuth, signOut } from 'firebase/auth';
-import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria } from '../../../src/Constants/Constantes';
+import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria, corVerdeIcon, userIcon } from '../../../src/Constants/Constantes';
 import { uploadImageAsync, salvarImagem, uploadImageToStorage } from '../../../firebaseConnection';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -68,16 +68,30 @@ export default function HomeScreenContent ({ navigation, route }) {
                 <AntDesign name="right" size={32} color='black' />
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor:corCinzaPrincipal}}>
-              <Text style={{fontSize:22}}>Total de Serviços</Text>
-              <Text style={{fontSize: 36, fontWeight: 'bold'}}>0</Text>
+            <View style={{backgroundColor:corCinzaPrincipal, width: '100%', height:129, borderBottomLeftRadius: 10, borderBottomRightRadius: 10, alignItems: 'center', justifyContent:'center'}}>
+              <View style={{width:'88%', height: 45, flexDirection: 'row', alignItems:'center'}}>
+                <Text style={{color:corAmarela, fontSize: 18, fontWeight:'bold'}}>09 de Novembro</Text>
+                <View style={{width: 70, marginLeft:10, borderLeftWidth: 1, borderLeftColor: 'white', borderRightColor: 'white', borderRightWidth: 1, alignItems:'center',justifyContent:'center'}}>
+                  <Text style={{fontSize:16, fontWeight:'bold', color:'white'}}>10:00</Text>
+                  <Text style={{fontSize:16, fontWeight:'bold', color:'white'}}>12:30</Text>
+                </View>
+                <Text style={{color:corVerdeIcon, fontSize: 14, fontWeight:'bold', marginLeft: 10}}>R$ 200,00</Text>
+              </View>
+              <View style={{width: '88%', height: 1, backgroundColor: 'white'}}></View>
+              <View style={{width:'88%', height: 70, flexDirection: 'row', alignItems:'center'}}>
+                <Image source={userIcon} style={{width:40, height: 40}} />
+                <View style={{marginLeft: 10}}>
+                  <Text style={{fontSize: 18, color:'white'}}>Pedro Costa da Silva</Text>
+                  <Text style={{fontSize: 18, color:corCinzaSecundaria}}>4,8 | 118 Avaliações</Text>
+                </View>
+              </View>
             </View>
           </View>
           <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('AgendaScreen')}>
             <MaterialIcons name="all-inbox" size={50} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Solicitações</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('Relatorios')}>
+          <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('Buscar')}>
             <FontAwesome name="search" size={48} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Buscar</Text>
           </TouchableOpacity>

@@ -4,15 +4,32 @@ import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria} from '../src
 import { Octicons } from '@expo/vector-icons';
 import ItemSolicitacao from './ItemSolicitacao.js';
 import { NumberInMonth } from '../src/functions/NumberInMonth';
+import ModalNovoEvento from './ModalNovoEvento.js';
 
 
 const SolicitacoesScreen = ({ navigation }) => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [reload, setReload] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [modal,setModal] = useState(false);
+  const [modalNome,setModalNome] = useState('');
+  const [modalEndereco,setModalEndereco] = useState('');
+  const [modalDia,setModalDia] = useState('');
+  const [modalMes,setModalMes] = useState('');
+  const [modalHoraInicio, setModalHoraInicio] = useState('')
+  const [modalIdEndereco,setModalIdEndereco] = useState(0)
+
+  const abrirModal = () =>{
+    setModal(true)
+  }
+
+  const fecharModal = () =>{
+    setModal(false)
+  }
 
   async function buscaSolicitacoes() {
-    const idFirebase = window.idFirebaseGlobal
+    // const idFirebase = window.idFirebaseGlobal
+    const idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3'
     try {
         const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoes?idFirebase=${idFirebase}`, {
             method: 'GET',
@@ -33,7 +50,13 @@ const SolicitacoesScreen = ({ navigation }) => {
   }, [reload]);
   
 
-  async function aceitaSolicitacao(pId){
+  async function aceitaSolicitacao(pId,pNome,pEndereco,pDia,pMes,pHoraInicio,pIdEndereco){
+    setModalNome(pNome)
+    setModalEndereco(pEndereco)
+    setModalDia(pDia)
+    setModalMes(pMes)
+    setModalHoraInicio(pHoraInicio)
+    setModalIdEndereco(pIdEndereco)
     const id = pId
     try {
         const response = await fetch(`http://${IpAtual}:3003/aceitarSolicitacao?id=${id}`, {
@@ -46,9 +69,9 @@ const SolicitacoesScreen = ({ navigation }) => {
         setSolicitacoes(prevSolicitacoes =>
           prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
         );
-  
         setReload(prevReload => !prevReload);
         console.log('Resultado da consulta:', data);
+        abrirModal()
     } catch (error) {
         console.error('Consulta erro busca solicitacoes:', error);
     }
@@ -89,6 +112,15 @@ const SolicitacoesScreen = ({ navigation }) => {
         <Octicons name="arrow-switch" size={36} color={corAmarela} style={{ transform: [{ rotate: '90deg' }] }} />
         <Text style={{color: 'white', fontSize: 22, fontWeight:'bold', paddingLeft: 15}}>Últimas Solicitações</Text>
       </View>
+      <ModalNovoEvento 
+        pVisible={modal} 
+        pFecharModal={fecharModal} 
+        pNome={modalNome} 
+        pEndereco={modalEndereco}
+        pDia={modalDia}
+        pMes={modalMes}
+        pHoraInicio={modalHoraInicio}
+        pIdEndereco={modalIdEndereco} />
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={corAmarela} />} style={styles.containerSolicitacoes} contentContainerStyle={styles.contentContainerSolicitacoes}>
         {solicitacoes.map((solicitacao, index) => (
           <ItemSolicitacao
@@ -97,8 +129,8 @@ const SolicitacoesScreen = ({ navigation }) => {
             dia={solicitacao[8].substring(8,10)}
             mes={NumberInMonth(parseInt(solicitacao[8].substring(5,7)),'N').toLowerCase()}
             endereco={`${solicitacao[2]}, ${solicitacao[3]}, ${solicitacao[4]}, ${solicitacao[5]} - ${solicitacao[7]}`}
-            horario={solicitacao[9]}
-            onUpdateAceitar={() => aceitaSolicitacao(solicitacao[10])}
+            horario={`${solicitacao[9].substring(0,2)}:${solicitacao[9].substring(2,4)}`}
+            onUpdateAceitar={() => aceitaSolicitacao(solicitacao[10],`${solicitacao[0]} ${solicitacao[1]}`,`${solicitacao[2]}, ${solicitacao[3]}, ${solicitacao[4]}, ${solicitacao[5]} - ${solicitacao[7]}`,solicitacao[8].substring(8,10),NumberInMonth(parseInt(solicitacao[8].substring(5,7)),'S').toLowerCase(),`${solicitacao[9].substring(0,2)}:${solicitacao[9].substring(2,4)}`,solicitacao[12])}
             onUpdateRecusar={() => recusaSolicitacao(solicitacao[10])}
             idSolicitacao={solicitacao[10]}
           />

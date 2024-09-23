@@ -105,17 +105,18 @@ app.get('/buscaSolicitacoes', async (req, res) => {
         e.municipio,
         e.cep,
         e.uf,
-        a.data_servico,
-        a.hora_servico,
+        a.dataServico,
+        a.horaServico,
         a.id,
-        a.situacao
+        a.situacao,
+        a.idEndereco
       FROM SOLICITACOES a 
-      JOIN PESSOAS b ON a.id_prestante = b.id
-      JOIN PESSOAS c ON a.id_contratante = c.id
-      JOIN ENDERECOS e ON e.id = a.id_endereco
-      WHERE a.id_prestante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
+      JOIN PESSOAS b ON a.idPrestante = b.id
+      JOIN PESSOAS c ON a.idContratante = c.id
+      JOIN ENDERECOS e ON e.id = a.idEndereco
+      WHERE a.idPrestante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
       AND a.situacao = 'P'
-      ORDER BY a.data_servico,a.data_enviado`;
+      ORDER BY a.dataServico, a.dataEnviado`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -227,9 +228,9 @@ app.get('/buscaServicos', async (req, res) => {
 
 app.post('/insertEventos', async (req, res) => {
   try {
-    const { idFirebase, mes, dia, horaInicio, horaFinal, descricao, situacao } = req.body;
+    const { idFirebase, mes, dia, horaInicio, horaFinal, descricao, situacao, classeEvento, idContratante, idEndereco } = req.body;
     const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`INSERT INTO EVENTOS(idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao) VALUES(:idFirebase,:mes,:dia,:horaInicio,:horaFinal,:descricao,:situacao)`, [idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao]);
+    const result = await connection.execute(`INSERT INTO EVENTOS(idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao,classeEvento,idContratante,idEndereco) VALUES(:idFirebase,:mes,:dia,:horaInicio,:horaFinal,:descricao,:situacao,:classeEvento,:idContratante,:idEndereco)`, [idFirebase,mes,dia,horaInicio,horaFinal,descricao,situacao,classeEvento,idContratante,idEndereco]);
     connection.commit();
     await connection.close();
     res.send({ success: true });
@@ -258,7 +259,7 @@ app.get('/buscaEventos', async (req, res) => {
   try {
     const { dia,mes,idFirebase } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
-    const sqlStatement = `SELECT e.id, e.mes, e.dia, e.horaInicio, e.horaFinal, e.descricao, CASE WHEN e.situacao = 'P' THEN 'Pendente' WHEN e.situacao = 'C' THEN 'Cancelado' ELSE 'Finalizado' END situacao, p.nome, p.sobrenome, end.cep, end.uf, end.municipio, end.bairro, end.rua, end.numero FROM EVENTOS e JOIN PESSOAS p ON e.idFirebase = p.idFirebase JOIN ENDERECOS end ON p.id = end.idPessoa WHERE e.idFirebase = '${idFirebase}' AND e.mes = '${mes}' AND e.dia = ${dia}`;
+    const sqlStatement = `SELECT e.id, e.mes, e.dia, e.horaInicio, e.horaFinal, e.descricao, CASE WHEN e.situacao = 'P' THEN 'Pendente' WHEN e.situacao = 'C' THEN 'Cancelado' ELSE 'Finalizado' END situacao, p.nome, p.sobrenome, end.cep, end.uf, end.municipio, end.bairro, end.rua, end.numero FROM EVENTOS e JOIN PESSOAS p ON e.idContratante = p.id JOIN ENDERECOS end ON e.idEndereco = end.id WHERE e.idFirebase = '${idFirebase}' AND e.mes = '${mes}' AND e.dia = ${dia} ORDER BY CAST (horaInicio AS NUMBER), CAST (horaFinal AS NUMBER)`;
     // const sqlStatement = `SELECT * FROM EVENTOS e JOIN PESSOAS p ON e.idFirebase = p.idFirebase JOIN ENDERECOS end ON p.id = end.idPessoa WHERE e.idFirebase = '${idFirebase}' AND e.mes = '${mes}' AND e.dia = ${dia}`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
@@ -287,6 +288,7 @@ app.put('/cancelarEvento', async (req, res) => {
 
 app.get('/buscaEventosPorMes', async (req, res) => {
   try {
+    const { idFirebase } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
     const sqlStatement = `
     SELECT 
@@ -302,7 +304,8 @@ app.get('/buscaEventosPorMes', async (req, res) => {
       SUM(CASE WHEN mes = 'Outubro' THEN 1 ELSE 0 END) AS Outubro,
       SUM(CASE WHEN mes = 'Novembro' THEN 1 ELSE 0 END) AS Novembro,
       SUM(CASE WHEN mes = 'Dezembro' THEN 1 ELSE 0 END) AS Dezembro
-    FROM EVENTOS`;
+    FROM EVENTOS
+    WHERE idFirebase = '${idFirebase}'`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -315,7 +318,7 @@ app.get('/buscaEventosPorMes', async (req, res) => {
 
 app.get('/buscaEventosPorDia', async (req, res) => {
   try {
-    const {mes} = req.query
+    const {mes, idFirebase} = req.query
     const connection = await oracledb.getConnection(dbConfig);
     const sqlStatement = `
     SELECT
@@ -351,7 +354,8 @@ app.get('/buscaEventosPorDia', async (req, res) => {
       COUNT(CASE WHEN dia = 30 THEN 1 END) AS "Dia 30",
       COUNT(CASE WHEN dia = 31 THEN 1 END) AS "Dia 31"
     FROM EVENTOS
-    WHERE mes = '${mes}'`;
+    WHERE mes = '${mes}'
+    AND idFirebase = '${idFirebase}'`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -379,9 +383,9 @@ app.get('/buscaAvaliacoes', async (req, res) => {
 
 app.get('/buscaConversas', async (req, res) => {
   try {
-    const { idFirebase } = req.query;
+    const { idFirebase, tipoUsuario } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
-    const sqlStatement = `SELECT c.id, c.idContratante, pc.nome, pc.sobrenome, c.idPrestante, pp.nome, pp.sobrenome FROM CONVERSAS c JOIN PESSOAS pc ON c.idContratante = pc.id JOIN PESSOAS pp ON c.idPrestante = pp.id WHERE pp.idFirebase = '${idFirebase}'`;
+    const sqlStatement = `SELECT c.id, c.idContratante, pc.nome, pc.sobrenome, c.idPrestante, pp.nome, pp.sobrenome FROM CONVERSAS c JOIN PESSOAS pc ON c.idContratante = pc.id JOIN PESSOAS pp ON c.idPrestante = pp.id WHERE p${tipoUsuario}.idFirebase = '${idFirebase}'`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();

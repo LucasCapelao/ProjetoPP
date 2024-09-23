@@ -161,4 +161,17 @@ export const uploadImageToStorage = async (image, idFirebase) => {
     }
   };
 
+
+  const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+  
+    const storageRef = ref(storage, 'images/my-uploaded-image.jpg');
+    uploadBytes(storageRef, blob).then((snapshot) => {
+      console.log('Uploaded a blob or file!', snapshot);
+    }).catch((error) => {
+      console.error('Upload error: ', error);
+    });
+  };
+
 export {app,firebaseConfig}

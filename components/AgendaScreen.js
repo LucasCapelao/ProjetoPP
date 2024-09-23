@@ -9,7 +9,8 @@ const AgendaScreen = ({ navigation }) => {
 
     async function buscaEventosPorMes(){
         try {
-            const response = await fetch(`http://${IpAtual}:3003/buscaEventosPorMes`, {
+            let idFirebase = window.idFirebaseGlobal
+            const response = await fetch(`http://${IpAtual}:3003/buscaEventosPorMes?idFirebase=${idFirebase}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

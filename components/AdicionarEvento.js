@@ -15,7 +15,6 @@ const AdicionarEventoScreen = ({ navigation }) => {
     const [selectedValueDia, setSelectedValueDia] = useState('');
     const [isFocusHoraInicio, setIsFocusHoraInicio] = useState(false);
     const [selectedValueHoraInicio, setSelectedValueHoraInicio] = useState('');
-    const [horaInicioDB, setHoraInicioDB] = useState()
     const [isFocusHoraFinal, setIsFocusHoraFinal] = useState(false);
     const [selectedValueHoraFinal, setSelectedValueHoraFinal] = useState('');
     const [dias,setDias] = useState([]);
@@ -74,13 +73,6 @@ const AdicionarEventoScreen = ({ navigation }) => {
         console.log("Valor selecionado:", item.value);
         setSelectedValueHoraInicio(item.label);
     };
-
-    function formatarHora(){
-        console.log(selectedValueHoraInicio)
-        setHoraInicioDB(selectedValueHoraInicio.replace(':',''))
-        console.log(horaInicioDB)
-        return horaInicioDB
-    }
 
     const handleSelectHoraFinal = (item, index) => {
         console.log("Valor selecionado:", item.value);

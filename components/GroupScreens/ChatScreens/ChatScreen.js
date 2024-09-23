@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { TouchableOpacity, Text, View, Image } from 'react-native';
 import {Bubble, GiftedChat, Send, InputToolbar} from 'react-native-gifted-chat';
-import { collection, addDoc, orderBy, where, query, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, orderBy, where, query, onSnapshot, updateDoc, doc, getDocs, update } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { auth, database } from '../../../firebaseConnection.js';
 import { useNavigation } from '@react-navigation/native';
@@ -11,11 +11,28 @@ import { corAmarela, corCinzaPrincipal, corCinzaTerciaria, userIcon } from '../.
 
 export default function ChatScreen({route}) {
   const { pIdChat } = route.params;
+  const { pIdDestino } = route.params;
   const { nome } = route.params;
   console.log(pIdChat)
 
   const [messages, setMessages] = useState([]);
   const navigation = useNavigation();
+
+  const mensagemLida = async () => {
+    const messagesRef = collection(database, 'chats');
+    const q = query(
+      messagesRef,
+      where('idChat', '==', pIdChat),
+      where('recipientId', '==', auth.currentUser.email),
+      where('isRead', '==', false)
+    );
+  
+    const snapshot = await getDocs(q);
+    snapshot.forEach((doc) => {
+      // Atualize o campo `isRead` para `true`
+      updateDoc(doc.ref, { isRead: true });
+    });
+  };
 
   useLayoutEffect(() => {
       navigation.setOptions({
@@ -45,11 +62,38 @@ export default function ChatScreen({route}) {
             createdAt: doc.data().createdAt.toDate(),
             text: doc.data().text,
             user: doc.data().user,
-            idChat: doc.data().idChat
+            idChat: doc.data().idChat,
+            isRead: doc.data().isRead
           }))
         );
       });
+
     return unsubscribe;
+  }, [pIdChat]);
+
+  const updateMessagesToRead = async () => {
+    const messagesRef = collection(database, 'chats');
+    const q = query(
+      messagesRef,
+      where('idChat', '==', pIdChat),
+      where('recipientId', '==', pIdDestino),
+      where('isRead', '==', false)
+    );
+
+    const snapshot = await getDocs(q);
+    console.log(`Número de mensagens não lidas: ${snapshot.size}`);
+
+    const updatePromises = snapshot.docs.map(async (docSnapshot) => {
+      const docRef = doc(database, 'chats', docSnapshot.id);
+      update(docRef, { isRead: true });
+    });
+
+    await Promise.all(updatePromises);
+    console.log('Mensagens marcadas como lidas.');
+  };
+
+  useEffect(() => {
+    updateMessagesToRead();
   }, [pIdChat]);
 
     const renderSend = (props) => {
@@ -97,6 +141,7 @@ export default function ChatScreen({route}) {
             {...props}
             containerStyle={{
               backgroundColor: corCinzaPrincipal,
+              color: 'whiteaeqwe'
             }}
           />
       );
@@ -119,7 +164,9 @@ export default function ChatScreen({route}) {
         createdAt,
         text,
         user,
-        idChat: pIdChat
+        idChat: pIdChat,
+        recipientId: pIdDestino,
+        isRead: false
       });
     }, [pIdChat]);
 
@@ -152,13 +199,14 @@ export default function ChatScreen({route}) {
           borderTopColor: corAmarela,
           borderTopWidth: 1,
           borderBottomColor: corAmarela,
-          borderBottomWidth: 1
+          borderBottomWidth: 1,
+          color: 'white'
         }}
         textInputStyle={{
           backgroundColor: corCinzaTerciaria,
           borderRadius: 20,
           marginRight: 8,
-          color: 'black',
+          color: 'white',
           borderWidth: 0.5,
           fontWeight: '300',
           paddingTop: 9,

@@ -1,6 +1,5 @@
 export const formatarCpfDB = (cpf) => {
-    const result = cpf.replace(/[.-]/g, '');
-    return result;
+    return cpf.replace(/[.-]/g, '');
 };
 
 export const formatarDataDB = (dateString) => {
@@ -15,11 +14,13 @@ export const formatarDataUsuario = (dateString) => {
 };
 
 export const formatarFone = (fone) => {
-    const result = fone.replace(/[()\-. \s]/g, '');
-    return result;
+    return fone.replace(/[()\-. \s]/g, '');
 };
 
-export const formatarCep = (cep) =>{
-    const result = cep.replace('-','');
-    return result;
+export const formatarCep = (cep) => {
+    return cep.replace('-','');
+}
+
+export const toCapitalize = (palavra) => {
+    return palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase();
 }

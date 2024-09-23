@@ -16,11 +16,17 @@ const MessagesScreenContent = ({navigation}) => {
   }
 
   async function buscaConversas() {
-    let idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3';
-    // let idFirebase = window.idFirebaseGlobal.toString();
+    // let idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3';
+    let idFirebase = window.idFirebaseGlobal.toString();
+    let tipoUsuario;
+    if(window.tipoUsuario == 1){
+      tipoUsuario = 'p'
+    }else{
+      tipoUsuario = 'c'
+    }
     console.log(idFirebase)
     try {
-        const response = await fetch(`http://${IpAtual}:3003/buscaConversas?idFirebase=${idFirebase}`, {
+        const response = await fetch(`http://${IpAtual}:3003/buscaConversas?idFirebase=${idFirebase}&tipoUsuario=${tipoUsuario}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -66,6 +72,8 @@ const MessagesScreenContent = ({navigation}) => {
                     navigation={navigation}
                     nomeCompleto={window.tipoUsuario == 1 ? `${mensagem[2]} ${mensagem[3]}` : `${mensagem[5]} ${mensagem[6]}`}
                     idChat={mensagem[0]}
+                    idDestino={window.tipoUsuario == 1 ? mensagem[1] : mensagem[4]}
+                    reload={reload}
                 />
             ))}
         </ScrollView>

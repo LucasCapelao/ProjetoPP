@@ -16,6 +16,7 @@ const DetailsDiaScreen = ({ navigation, route }) => {
 
     async function buscaEventos() {
         let idFirebase = window.idFirebaseGlobal
+        // let idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3'
         console.log(mes)
         console.log(dia)
         try {
@@ -75,8 +76,8 @@ const DetailsDiaScreen = ({ navigation, route }) => {
             {eventos.map((evento, index) => (
                 <BoxEvento
                     navigation={navigation}
-                    horaInicio={`${evento[3].substring(0,2)}:${evento[3].substring(2,4)}`}
-                    horaFinal={`${evento[4].substring(0,2)}:${evento[4].substring(2,4)}`}
+                    horaInicio={`${evento[3].substring(0,2).toString()}:${evento[3].substring(2,4)}`}
+                    horaFinal={`${evento[4].substring(0,2).toString()}:${evento[4].substring(2,4)}`}
                     nomeCompleto={`${evento[7]} ${evento[8]}`}
                     endereco={`${evento[13]}, ${evento[14]}, ${evento[12]}, ${evento[11]} - ${evento[10]}`}
                     situacao={evento[6]}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import {IpAtual, corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria, userIcon, corVerdeIcon, corVermelhaIcon} from '../src/Constants/Constantes.js';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';

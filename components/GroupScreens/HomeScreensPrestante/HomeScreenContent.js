@@ -7,6 +7,7 @@ import {getAuth, signOut } from 'firebase/auth';
 import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria } from '../../../src/Constants/Constantes';
 import { uploadImageAsync, salvarImagem, uploadImageToStorage } from '../../../firebaseConnection';
 import * as ImagePicker from 'expo-image-picker';
+import ModalNovoEvento from '../../ModalNovoEvento';
 
 
 const imgFirebase = require('../../../assets/4.png')

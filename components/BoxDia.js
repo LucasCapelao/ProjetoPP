@@ -7,7 +7,8 @@ export default function BoxDia({navigation,dia,diaSemana,mes}){
 
     async function buscaEventosPorDia(){
         try {
-            const response = await fetch(`http://${IpAtual}:3003/buscaEventosPorDia?mes=${mes}`, {
+            let idFirebase = window.idFirebaseGlobal
+            const response = await fetch(`http://${IpAtual}:3003/buscaEventosPorDia?mes=${mes}&idFirebase=${idFirebase}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

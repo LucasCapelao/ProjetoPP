@@ -57,7 +57,8 @@ const RelatoriosScreen = ({ navigation }) => {
 
   useEffect(() => {
     async function buscaServicos(pMes,bulletMes) {
-      const idFirebase = window.idFirebaseGlobal
+      // let idFirebase = window.idFirebaseGlobal
+      let idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3'
       let mes = pMes
       const ano = anoFiltro
       try {
