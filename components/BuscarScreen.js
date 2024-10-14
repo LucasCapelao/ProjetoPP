@@ -1,15 +1,38 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { corCinzaPrincipal, corAmarela, corCinzaSecundaria, corCinzaTerciaria } from '../src/Constants/Constantes';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { corCinzaPrincipal, corAmarela, corCinzaSecundaria, corCinzaTerciaria, IpAtual } from '../src/Constants/Constantes';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5, AntDesign, Feather } from '@expo/vector-icons';
 import { CardPrestante } from './CardPrestante';
 
 const BuscarScreen = ({ navigation }) => {
   const [selecionado,setSelecionado] = useState(0)
+  const [reload,setReload] = useState(false)
+  const [prestantes,setPrestantes] = useState([])
 
   const selecionar = (p) =>{
     setSelecionado(p)
+    setReload(true)
   }
+
+  async function buscaPrestantes() {
+    try {
+        const response = await fetch(`http://${IpAtual}:3003/buscaPrestantes?especialidade=${selecionado}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        setPrestantes(data)
+        setReload(false)
+    } catch (error) {
+        console.error('Consulta erro busca prestantes:', error);
+    }
+  }
+
+  useEffect(() => {
+    buscaPrestantes();
+  }, [reload]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000', alignItems:'center' }}>
@@ -42,7 +65,21 @@ const BuscarScreen = ({ navigation }) => {
         <Octicons name="arrow-switch" size={36} color={corAmarela} style={{ transform: [{ rotate: '90deg' }] }} />
         <Text style={{color: 'white', fontSize: 22, fontWeight:'bold', paddingLeft: 15}}>Avaliação Média</Text>
       </View>
-      <CardPrestante />
+      <ScrollView refreshControl={<RefreshControl tintColor={corAmarela} />} style={styles.containerSolicitacoes} contentContainerStyle={styles.contentContainerSolicitacoes}>
+        {prestantes.map((prestante, index) => (
+          <CardPrestante
+            key={index}
+            navigation={navigation}
+            nome={prestante[1]}
+            sobrenome={prestante[2]}
+            dataNascimento={prestante[3]}
+            especialidade={prestante[4]}
+            media={prestante[5]}
+            avaliacoes={prestante[6]}
+            idFirebasePrestante={prestante[7]}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -80,6 +117,13 @@ const styles = StyleSheet.create({
     alignItems: 'center'
     // backgroundColor: 'green'
   },
+  containerSolicitacoes:{
+    width: '90%',
+    marginTop: 10,
+  },
+  contentContainerSolicitacoes:{
+    alignItems: 'center',
+  }
 });
 
 export default BuscarScreen;

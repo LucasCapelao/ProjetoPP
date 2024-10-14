@@ -5,16 +5,29 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { IpAtual } from '../src/Constants/Constantes';
 import BoxAvaliacoes from './BoxAvaliacao';
 import { ScrollView } from 'react-native-gesture-handler';
+import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 
-
-const AvaliacoesScreen = ({ navigation }) => {
+const AvaliacoesScreen = ({ navigation, route }) => {
     const [avaliacoes,setAvaliacoes] = useState([])
     const [avaliacaoMedia,setAvaliacaoMedia] = useState(0)
     const [totalAvaliacoes,setTotalAvaliacoes] = useState(0)
+    const { telaOrigem } = route.params;
+    const { idFirebaseTelaOrigem } = route.params;
 
+    const voltarTelaOrigem = () =>{
+        // navigation.navigate(`'${telaOrigem}'`)
+        navigation.goBack()
+    }
 
     async function buscaAvaliacoes() {
-        let idFirebase = window.idFirebaseGlobal;
+        let idFirebase
+        if(idFirebaseTelaOrigem != null){
+            console.log('entrou if')
+            console.log(idFirebaseTelaOrigem)
+            idFirebase = idFirebaseTelaOrigem;
+        }else{
+            idFirebase = window.idFirebaseGlobal;
+        }
         console.log(idFirebase)
         try {
             const response = await fetch(`http://${IpAtual}:3003/buscaAvaliacoes?idFirebase=${idFirebase}`, {
@@ -29,7 +42,7 @@ const AvaliacoesScreen = ({ navigation }) => {
             setTotalAvaliacoes(data[0][3])
             let media = 0;
             data.forEach(linha => {
-                let valorNumerico = parseFloat(linha[2].replace(",", "."));
+                let valorNumerico = parseFloat(linha[2].toString().replace(",", "."));
                 media += valorNumerico;
             });
             let mediaArredondada = media / data.length
@@ -48,6 +61,12 @@ const AvaliacoesScreen = ({ navigation }) => {
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
             <View style={styles.headerScreen}>
               <Text style={styles.textHeaderScreen}>Avaliações</Text>
+              {telaOrigem!=null
+              ?<TouchableOpacity onPress={()=>voltarTelaOrigem()} style={{position:'absolute', left:0, width: 40, height:'100%', borderRighttColor: corCinzaPrincipal, borderRightWidth: 1, alignItems:'center', justifyContent:'center'}}>
+                <AntDesign name="left" size={24} color='black' />
+              </TouchableOpacity>
+              :<></>
+              }
             </View>
             <View style={{marginTop:20,backgroundColor:corCinzaPrincipal,width: '90%',height:140, borderRadius:10, flexDirection:'row'}}>
                 <View style={{width:'50%',alignItems:'center',justifyContent:'center',display:'flex',flexDirection:'column'}}>

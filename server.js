@@ -396,5 +396,19 @@ app.get('/buscaConversas', async (req, res) => {
   }
 });
 
+app.get('/buscaPrestantes', async (req, res) => {
+  try {
+    const {especialidade} = req.query
+    let connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT a.id, a.nome, a.sobrenome, TO_CHAR(a.dataNascimento, 'DD/MM/YYYY') as data, a.especialidade, ROUND(AVG(TO_NUMBER(av.avaliacao)),1) as media, COUNT(av.avaliacao) AS total, a.idFirebase FROM PESSOAS a, AVALIACOES av, SERVICOS s WHERE a.id = s.idPrestante AND s.id = av.idServico AND a.especialidade = ${especialidade} AND a.tipoUsuario = 1 GROUP BY a.id, a.nome, a.especialidade, a.sobrenome, a.dataNascimento, a.idFirebase`);
+    console.log('Resultado da consulta server.js:', result);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar prestantes:', error);
+    res.status(500).json({ error: 'Erro ao buscar prestantes' });
+  }
+});
+
 const PORT = 3003;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
