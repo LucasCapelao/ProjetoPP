@@ -2,129 +2,156 @@ import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { AntDesign, FontAwesome, MaterialCommunityIcons, Octicons } from '@expo/vector-icons';
 import { corAmarela, corCinzaSecundaria, IpAtual } from '../src/Constants/Constantes';
-import { ItemOrcamento } from './ItemOrcamento';
 import { NumberInMonth } from '../src/functions/NumberInMonth';
+import ItemSolicitacaoContratante from './ItemSolicitacaoContratante';
 import { buscarImagem } from '../firebaseConnection';
 
-
-const OrcamentosScreen = ({ navigation }) => {
-    const [situacao,setSituacao] = useState('1')
-    const [filtro,setFiltro] = useState('a.data asc')
-    const [orcamentos,setOrcamentos] = useState([])
+const SolicitacoesContratanteScreen = ({ navigation }) => {
+    const [situacao,setSituacao] = useState('P')
+    const [solicitacoes,setSolicitacoes] = useState([])
     const [reload,setReload] = useState(false)
+    const [carregarImagens,setCarregarImagens] = useState(false)
     const [refreshing, setRefreshing] = useState(false);
     const [fotoPerfil, setFotoPerfil] = useState({});
 
     const alterarSituacao = (situacao) =>{
         setSituacao(situacao)
-        setReload(true)
+        setRefreshing(true)
     }
 
-    const mudarFiltro = () =>{
-        if(filtro === 'a.data asc'){
-            setFiltro('a.valor')
-        }else{
-            setFiltro('a.data asc')
-        }
-        setReload(true)
-    }
-
-    async function buscaOrcamentos() {
+    async function buscaSolicitacoes() {
         // let idFirebase = window.idFirebaseGlobal
         let idFirebase = 'qTgUJXYYJ9OT0uaMo0PDbhb7tl53'
         try {
-            const response = await fetch(`http://${IpAtual}:3003/buscaOrcamentos?idFirebase=${idFirebase}&ordernacao=${filtro}&situacao=${situacao}`, {
+            const response = await fetch(`http://${IpAtual}:3003/buscaSolicitacoesContratante?idFirebase=${idFirebase}&situacao=${situacao}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
             const data = await response.json();
-            setOrcamentos(data)
-            setReload(prevReload => !prevReload);
+            setSolicitacoes(data)
         } catch (error) {
-            console.error('Consulta erro busca orcamentos:', error);
+            console.error('Erro ao buscar solicitações:', error);
+        } finally {
+            setRefreshing(false); // Finaliza o indicador de atualização
         }
     }
 
     useEffect(() => {
-        buscaOrcamentos().then(() => setRefreshing(false))
-    }, [reload]);
-
-    useEffect(() => {
-        const carregarFotos = async () => {
-            const fotos = {};
-            await Promise.all(
-                orcamentos.map(async (orcamento, index) => {
-                    const url = await buscarImagem(orcamento[10]); // Busca a URL da imagem passando o orcamento[10]
-                    fotos[index] = url; // Armazena no objeto `fotos`
-                })
-            );
-            setFotoPerfil(fotos); // Atualiza o estado com todas as URLs
-        };
-
-        if (orcamentos.length > 0) {
-            carregarFotos();
-        }
-    }, [orcamentos]);
+        buscaSolicitacoes();
+    }, [situacao]);
 
     const onRefresh = () => {
         setRefreshing(true);
-        setReload(prevReload => !prevReload); 
+        buscaSolicitacoes();
     };
+
+    useEffect(() => {
+        const carregarFotos = async () => {
+            if (solicitacoes.length === 0) return;
+
+            const fotos = {};
+            await Promise.all(
+                solicitacoes.map(async (solicitacao, index) => {
+                    const refImage = solicitacao[13]; 
+                    if (refImage) {
+                        try {
+                            const url = await buscarImagem(refImage);
+                            fotos[index] = url;
+                        } catch (error) {
+                            console.error(`Erro ao carregar a imagem do prestador ${index}:`, error);
+                        }
+                    } else {
+                        console.warn(`Solicitação ${index} não contém referência de imagem válida`);
+                    }
+                })
+            );
+            setFotoPerfil(fotos);
+        };
+
+        carregarFotos();
+    }, [solicitacoes]);
+
+    async function recusaSolicitacao(pId){
+        const id = pId
+        try {
+            const response = await fetch(`http://${IpAtual}:3003/recusarSolicitacao?id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            setSolicitacoes(prevSolicitacoes =>
+              prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
+            );
+      
+            setReload(prevReload => !prevReload);
+            console.log('Resultado da consulta:', data);
+        } catch (error) {
+            console.error('erro ao update solicitacoes:', error);
+        }
+    }
+
+    async function aceitaSolicitacao(pId){
+        const id = pId
+        try {
+            const response = await fetch(`http://${IpAtual}:3003/aceitarSolicitacao?id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            setSolicitacoes(prevSolicitacoes =>
+              prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
+            );
+            setReload(prevReload => !prevReload);
+            console.log('Resultado da consulta:', data);
+        } catch (error) {
+            console.error('erro ao update solicitacoes:', error);
+        }
+      }
 
     return (
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
             <View style={styles.headerScreen}>
-              <Text style={styles.textHeaderScreen}>Orçamentos</Text>
+              <Text style={styles.textHeaderScreen}>Solicitaçõs</Text>
             </View>
             <View style={{width:'100%', marginTop: 20}}>
                 <Text style={{color:'white', fontSize: 22, fontWeight:'bold', position:'absolute', left:20}}>Etapas</Text>
             </View>
             <View style={{width:'90%', height: 60, marginTop: 30, marginBottom: 30, alignItems:'center',flexDirection:'row', justifyContent:'space-between'}}>
                 <View style={{width:'100%', backgroundColor:corAmarela, height:1, position:'absolute'}}></View>
-                <TouchableOpacity onPress={()=>alterarSituacao('1')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
-                    {situacao === '1'
+                <TouchableOpacity onPress={()=>alterarSituacao('P')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
+                    {situacao === 'P'
                         ?<View style={{width:18, height: 18, backgroundColor:corAmarela, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                         :<View style={{width:18, height: 18, backgroundColor:corCinzaSecundaria, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                     }
-                    <Text style={{position:'absolute', top:38, color:'white'}}>Pendente</Text>
+                    <Text style={{position:'absolute', top:38, color:'white'}}>Pendentes</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>alterarSituacao('2')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
-                    {situacao === '2'
+                <TouchableOpacity onPress={()=>alterarSituacao('E')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
+                    {situacao === 'E'
                         ?<View style={{width:18, height: 18, backgroundColor:corAmarela, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                         :<View style={{width:18, height: 18, backgroundColor:corCinzaSecundaria, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                     }
-                    <Text style={{position:'absolute', top:38, color:'white'}}>Aguardando</Text>
+                    <Text style={{position:'absolute', top:38, color:'white'}}>Enviadas</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>alterarSituacao('3')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
-                    {situacao === '3'
+                <TouchableOpacity onPress={()=>alterarSituacao('A')} style={{width:100, height: 50, alignItems:'center', justifyContent:'center'}}>
+                    {situacao === 'A'
                         ?<View style={{width:18, height: 18, backgroundColor:corAmarela, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                         :<View style={{width:18, height: 18, backgroundColor:corCinzaSecundaria, borderRadius:'100%', borderColor:'white', borderWidth:3}}></View>
                     }
-                    <Text style={{position:'absolute', top:38, color:'white'}}>Finalizado</Text>
+                    <Text style={{position:'absolute', top:38, color:'white'}}>Confirmadas</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.containerFilter} onPress={()=>mudarFiltro()}>
-                <Octicons name="arrow-switch" size={32} color={corAmarela} style={{ transform: [{ rotate: '90deg' }] }} />
-                {filtro==='a.valor'
-                    ?<Text style={{color: 'white', fontSize: 21, fontWeight:'bold', paddingLeft: 15}}>Valor (R$)</Text>
-                    :<Text style={{color: 'white', fontSize: 21, fontWeight:'bold', paddingLeft: 15}}>Data (crescente)</Text>
-                }
-            </TouchableOpacity>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={corAmarela} />} style={styles.containerOrcamentos} contentContainerStyle={styles.contentContainerOrcamentos}>
-                {orcamentos.map((orcamento, index) => (
-                    <ItemOrcamento
+                {solicitacoes.map((solicitacao, index) => (
+                    <ItemSolicitacaoContratante
                         key={index}
                         navigation={navigation}
-                        dia={orcamento[0].substring(0,2)}
-                        mes={NumberInMonth(parseInt(orcamento[0].substring(3,5)),'S')}
-                        horaInicio={`${orcamento[1].substring(0,2)}:${orcamento[1].substring(2,4)}`}
-                        horaFinal={`${orcamento[2].substring(0,2)}:${orcamento[2].substring(2,4)}`}
-                        valor={orcamento[3].replace('.',',')}
-                        nome={`${orcamento[6]} ${orcamento[7]}`}
-                        media={orcamento[8]}
-                        avaliacoes={orcamento[9]}
+                        nome={`${solicitacao[0]} ${solicitacao[1]}`}
                         fotoPerfil={fotoPerfil[index]}
                     />
                 ))}
@@ -168,4 +195,4 @@ const styles = StyleSheet.create({
       }
 });
 
-export default OrcamentosScreen;
+export default SolicitacoesContratanteScreen;

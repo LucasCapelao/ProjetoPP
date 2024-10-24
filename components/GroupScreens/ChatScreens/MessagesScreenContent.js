@@ -17,7 +17,8 @@ const MessagesScreenContent = ({navigation}) => {
 
   async function buscaConversas() {
     // let idFirebase = '63f7u1oXTHcI62Tin3UXnLqnRGH3';
-    let idFirebase = window.idFirebaseGlobal.toString();
+    let idFirebase = 'qTgUJXYYJ9OT0uaMo0PDbhb7tl53';
+    // let idFirebase = window.idFirebaseGlobal.toString();
     let tipoUsuario;
     if(window.tipoUsuario == 1){
       tipoUsuario = 'p'

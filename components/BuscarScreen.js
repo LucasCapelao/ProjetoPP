@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } 
 import { corCinzaPrincipal, corAmarela, corCinzaSecundaria, corCinzaTerciaria, IpAtual } from '../src/Constants/Constantes';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5, AntDesign, Feather } from '@expo/vector-icons';
 import { CardPrestante } from './CardPrestante';
+import { buscarImagem } from '../firebaseConnection';
 
 const BuscarScreen = ({ navigation }) => {
   const [selecionado,setSelecionado] = useState(0)
   const [reload,setReload] = useState(false)
   const [prestantes,setPrestantes] = useState([])
+  const [fotoPerfil, setFotoPerfil] = useState({});
 
   const selecionar = (p) =>{
     setSelecionado(p)
@@ -33,6 +35,24 @@ const BuscarScreen = ({ navigation }) => {
   useEffect(() => {
     buscaPrestantes();
   }, [reload]);
+
+  useEffect(() => {
+    const carregarFotos = async () => {
+      const fotos = {};
+      await Promise.all(
+        prestantes.map(async (prestante, index) => {
+          const url = await buscarImagem(prestante[8]);
+          fotos[index] = url; // Armazena no objeto `fotos`
+        })
+      );
+      setFotoPerfil(fotos); // Atualiza o estado com todas as URLs
+      console.log('Fotos carregadas:', fotos); // Adiciona o log aqui após a atualização do estado
+    };
+
+    if (prestantes.length > 0) {
+      carregarFotos();
+    }
+  }, [prestantes]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#000', alignItems:'center' }}>
@@ -77,6 +97,7 @@ const BuscarScreen = ({ navigation }) => {
             media={prestante[5]}
             avaliacoes={prestante[6]}
             idFirebasePrestante={prestante[7]}
+            fotoPerfil={fotoPerfil[index]}
           />
         ))}
       </ScrollView>

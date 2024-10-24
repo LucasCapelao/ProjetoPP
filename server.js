@@ -400,13 +400,64 @@ app.get('/buscaPrestantes', async (req, res) => {
   try {
     const {especialidade} = req.query
     let connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`SELECT a.id, a.nome, a.sobrenome, TO_CHAR(a.dataNascimento, 'DD/MM/YYYY') as data, a.especialidade, ROUND(AVG(TO_NUMBER(av.avaliacao)),1) as media, COUNT(av.avaliacao) AS total, a.idFirebase FROM PESSOAS a, AVALIACOES av, SERVICOS s WHERE a.id = s.idPrestante AND s.id = av.idServico AND a.especialidade = ${especialidade} AND a.tipoUsuario = 1 GROUP BY a.id, a.nome, a.especialidade, a.sobrenome, a.dataNascimento, a.idFirebase`);
+    const result = await connection.execute(`SELECT a.id, a.nome, a.sobrenome, TO_CHAR(a.dataNascimento, 'DD/MM/YYYY') as data, a.especialidade, ROUND(AVG(TO_NUMBER(av.avaliacao)),1) as media, COUNT(av.avaliacao) AS total, a.idFirebase, a.fotoPerfil FROM PESSOAS a, AVALIACOES av, SERVICOS s WHERE a.id = s.idPrestante AND s.id = av.idServico AND a.especialidade = ${especialidade} AND a.tipoUsuario = 1 GROUP BY a.id, a.nome, a.especialidade, a.sobrenome, a.dataNascimento, a.idFirebase, a.fotoPerfil`);
     console.log('Resultado da consulta server.js:', result);
     await connection.close();
     res.send(result.rows);
   } catch (error) {
     console.error('Erro ao buscar prestantes:', error);
     res.status(500).json({ error: 'Erro ao buscar prestantes' });
+  }
+});
+
+app.get('/buscaOrcamentos', async (req, res) => {
+  try {
+    const { idFirebase, ordernacao, situacao } = req.query
+    let connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(`SELECT TO_CHAR(a.data,'DD/MM/YYYY'), a.horaInicio, a.horaFinal, TO_CHAR(a.valor,'FM9999999999990.00'), s.descricao, a.descricao, p.nome, p.sobrenome, ROUND(AVG(TO_NUMBER(av.avaliacao)),1) as media, COUNT(av.avaliacao) AS total, p.fotoPerfil FROM ORCAMENTOS a, SITUACOESORCAMENTO s, SERVICOS sr, AVALIACOES av, PESSOAS p, PESSOAS pf WHERE p.id = a.idPrestante AND pf.id = a.idContratante AND pf.idFirebase = '${idFirebase}' AND a.situacao = ${situacao} AND a.situacao = s.id AND sr.id = av.idServico GROUP BY a.data, a.horaInicio, a.horaFinal, a.valor, s.descricao, a.descricao, p.nome, p.sobrenome, p.fotoPerfil ORDER BY ${ordernacao}`);
+    console.log('Resultado da consulta server.js:', result);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar prestantes:', error);
+    res.status(500).json({ error: 'Erro ao buscar prestantes' });
+  }
+});
+
+app.get('/buscaSolicitacoesContratante', async (req, res) => {
+  try {
+    const { idFirebase, situacao } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `
+      SELECT 
+        c.nome,
+        c.sobrenome,
+        e.rua,
+        e.numero,
+        e.bairro,
+        e.municipio,
+        e.cep,
+        e.uf,
+        a.dataServico,
+        a.horaServico,
+        a.id,
+        a.situacao,
+        a.idEndereco,
+        c.fotoPerfil
+      FROM SOLICITACOES a 
+      JOIN PESSOAS c ON a.idPrestante = c.id
+      JOIN PESSOAS b ON a.idContratante = b.id
+      JOIN ENDERECOS e ON e.id = a.idEndereco
+      WHERE a.idContratante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
+      AND a.situacao = '${situacao}'
+      ORDER BY a.dataServico, a.dataEnviado`;
+    const result = await connection.execute(sqlStatement);
+    console.log('Resultado da consulta server.js:', result.rows);
+    await connection.close();
+    res.send(result.rows);
+  } catch (error) {
+    console.error('Erro ao executar consulta:', error);
+    res.status(500).json({ error: 'Erro ao executar consulta.' });
   }
 });
 

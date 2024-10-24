@@ -29,7 +29,7 @@ const App = ({navigation,route}) => {
   return (
     <NavigationContainer independent={true}>
       <StatusBar hidden></StatusBar>
-      <Stack.Navigator initialRouteName="TabBarContratanteView" screenOptions={{ headerShown: false, gestureEnabled: false }}>
+      <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <Stack.Screen name="CadastroScreen" component={CadastroScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="IntroducaoScreen" component={IntroducaoScreen} />

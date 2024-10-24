@@ -7,9 +7,9 @@ import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, I
 
 export const CardPrestante = ({ navigation, fotoPerfil, nome, sobrenome, dataNascimento, especialidade, avaliacoes, media, idFirebasePrestante }) => {
     return (
-        <TouchableOpacity onPress={()=>navigation.navigate('DetailsPrestante',{nome:nome,sobrenome:sobrenome,dataNascimento:dataNascimento,avaliacoes:avaliacoes,media:media,idFirebasePrestante:idFirebasePrestante,especialidade:especialidade})} style={{ backgroundColor: corCinzaPrincipal, alignItems:'center', width: '100%', height: 130, borderRadius: 10 }}>
+        <TouchableOpacity onPress={()=>navigation.navigate('DetailsPrestante',{nome:nome,sobrenome:sobrenome,dataNascimento:dataNascimento,avaliacoes:avaliacoes,media:media,idFirebasePrestante:idFirebasePrestante,especialidade:especialidade,fotoPerfil:fotoPerfil})} style={{ backgroundColor: corCinzaPrincipal, alignItems:'center', width: '100%', height: 130, borderRadius: 10 }}>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', margin: 10}}>
-                <Image source={userIcon} style={{width: 30, height: 30, marginLeft: 10}} />
+                <Image source={{ uri:fotoPerfil }} style={{width: 30, height: 30, marginLeft: 10, borderRadius: 5}} />
                 <Text style={{color:'white', fontSize: 18, marginLeft: 10}}>{nome} {sobrenome}</Text>
                 <TouchableOpacity style={{position: 'absolute', right: 20}}>
                     <MaterialIcons name="chat" size={30} color={corAmarela} />

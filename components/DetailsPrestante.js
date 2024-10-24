@@ -15,6 +15,7 @@ export const DetailsPrestante = ({ navigation, route }) => {
     const { avaliacoes } = route.params;
     const { idFirebasePrestante }  = route.params;
     const { especialidade } = route.params;
+    const { fotoPerfil } = route.params;
     console.log(avaliacoes)
     console.log(media)
     console.log(idFirebasePrestante)
@@ -26,7 +27,7 @@ export const DetailsPrestante = ({ navigation, route }) => {
     return (
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
             <View style={{width: '90%', height: 170, backgroundColor: corCinzaPrincipal, marginTop: '10%', borderRadius: 10, flexDirection: 'row', alignItems:'center'}}>
-                <Image source={userIcon} style={{width: '35%', height: 120, marginLeft: 20}} />
+                <Image source={{ uri:fotoPerfil }} style={{width: '35%', height: 120, marginLeft: 20, borderRadius: 10}} />
                 <View style={{padding: 15, height: 120, width: '65%'}}>
                     <Text style={{color: corAmarela, fontSize: 16}}><Text style={{color: corAmarela, fontSize: 18, fontWeight: 'bold'}}>{nome}</Text> {sobrenome}</Text>
                     <Text style={{color: corAmarela, fontSize: 18, fontWeight: 'bold'}}>{calcularIdade(dataNascimento)} Anos<Text style={{color: corCinzaSecundaria, fontSize: 12}}> ({dataNascimento})</Text></Text> 

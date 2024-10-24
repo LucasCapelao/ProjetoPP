@@ -7,6 +7,8 @@ import {getAuth, signOut } from 'firebase/auth';
 import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria, corVerdeIcon, userIcon } from '../../../src/Constants/Constantes';
 import { uploadImageAsync, salvarImagem, uploadImageToStorage } from '../../../firebaseConnection';
 import * as ImagePicker from 'expo-image-picker';
+import ultimaFuncao from '../../../firebaseConnection';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 
 const imgFirebase = require('../../../assets/4.png')
@@ -14,29 +16,47 @@ const imgFirebase = require('../../../assets/4.png')
 const auth = getAuth();
 
 export default function HomeScreenContent ({ navigation, route }) {
-  const idFirebase = window.idFirebaseGlobal;
+  const idFirebase = 'asdasjdasdiasjda';
   const [image, setImage] = useState(null);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Allow selection of all media types (images, videos)
-      allowsEditing: true, // Allow the user to edit the selected image
-      aspect: [4, 3], // Set the aspect ratio for editing (optional)
-      quality: 1, // Set the image quality (1 is the highest)
-    });
+const pickImage = async () => {
+  console.log('Inicio do pickImage');
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
   
-    if (!result.canceled && result.assets[0].uri) {
-      // Check if the user didn't cancel the selection and an image URI is available
-      console.log('Selected image URI:', result.assets[0].uri);
-  
-      try {
-        const downloadURL = await uploadImageToStorage(result.assets[0].uri, idFirebase);
-        console.log('Image uploaded successfully. Download URL:', downloadURL);
-      } catch (error) {
-        console.error('Upload failed:', error);
-      }
+  console.log('Resultado do ImagePicker:', result);
+
+  if (!result.canceled && result.assets[0].uri) {
+    console.log('Selected image URI:', result.assets[0].uri);
+    
+    try {
+      // Resize the image before uploading
+      const manipResult = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 1024 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      
+      console.log('Resized image URI:', manipResult.uri);
+      
+      console.log('Inicio do upload');
+      const downloadURL = await ultimaFuncao(manipResult.uri, 'testearquivo');
+      console.log('Image uploaded successfully. Download URL:', downloadURL);
+      console.log('Fim do upload');
+    } catch (error) {
+      console.error('Upload failed:', error);
     }
-  };
+  } else {
+    console.log('User canceled image picking or no URI found');
+  }
+  console.log('Fim do pickImage');
+};
+
+  
    
     const logout =()=>{
       signOut(auth).then(() => {
@@ -65,7 +85,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', height: 40, justifyContent:'space-between'}}>
               <Text style={{fontSize: 20, fontWeight: 'bold', paddingLeft: 20}}>Próximos Eventos</Text>
               <TouchableOpacity style={{ width: 50, borderLeftColor: 'black', borderLeftWidth: 1, height: '100%', alignItems:'center', justifyContent:'center'}}>
-                <AntDesign name="right" size={32} color='black' />
+                <AntDesign name="right" size={26} color='black' />
               </TouchableOpacity>
             </View>
             <View style={{backgroundColor:corCinzaPrincipal, width: '100%', height:129, borderBottomLeftRadius: 10, borderBottomRightRadius: 10, alignItems: 'center', justifyContent:'center'}}>
@@ -87,7 +107,7 @@ export default function HomeScreenContent ({ navigation, route }) {
               </View>
             </View>
           </View>
-          <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('AgendaScreen')}>
+          <TouchableOpacity style={styles.containerActions} onPress={() => navigation.navigate('SolicitacoesContratanteScreen')}>
             <MaterialIcons name="all-inbox" size={50} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Solicitações</Text>
           </TouchableOpacity>
@@ -95,7 +115,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             <FontAwesome name="search" size={48} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Buscar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.containerActions}>
+          <TouchableOpacity style={styles.containerActions} onPress={pickImage}>
             <Ionicons name="settings-sharp" size={50} color={corAmarela} />
             <Text style={{fontSize: 25, color: corAmarela, marginLeft: 20, fontWeight: 'bold'}}>Configurações</Text>
           </TouchableOpacity>
