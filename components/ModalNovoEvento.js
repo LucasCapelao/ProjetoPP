@@ -4,18 +4,21 @@ import { corCinzaSecundaria, corCinzaPrincipal, corAmarela, corVerdeIcon, userIc
 import { Dropdown } from 'react-native-element-dropdown';
 import { toCapitalize } from '../src/Converters/Converter';
 
-const ModalNovoEvento = ({pVisible, pFecharModal, fotoUsuario, pNome, pEndereco, pDia, pMes, pHoraInicio, pIdContratante, pIdEndereco }) => {
+const ModalNovoEvento = ({pVisible, pFecharModal, fotoUsuario, pNome, pEndereco, pDia, pMes, pHoraInicio, pIdContratante, pIdEndereco, pDescricao }) => {
     const [horas,setHoras] = useState([]);
     const [isFocusHoraFinal, setIsFocusHoraFinal] = useState(false);
     const [selectedValueHoraFinal, setSelectedValueHoraFinal] = useState('');
-    const [descricaoEvento,setDescricaoEvento] = useState('');
+    const [descricaoEvento,setDescricaoEvento] = useState(pDescricao);
     const [mesReduzido,setMesReduzido] = useState(pMes!=null?pMes.substring(0,3):'')
 
+    console.log('descr',pDescricao)
     console.log(pIdEndereco)
     const handleSelectHoraFinal = (item, index) => {
         console.log("Valor selecionado:", item.value);
         setSelectedValueHoraFinal(item.value);
     };
+
+    console.log(pMes)
 
     useEffect(() => {
         const horarios = [];
@@ -32,10 +35,8 @@ const ModalNovoEvento = ({pVisible, pFecharModal, fotoUsuario, pNome, pEndereco,
             }
         }
         setHoras(horarios);
-        setMesReduzido(pMes!=null?pMes.substring(0,3):'')
-        console.log('mes param',pMes)
-        console.log('mes red',mesReduzido)
-      },[])
+        setMesReduzido(toCapitalize(pMes.substring(0,3)))
+      },[pMes])
 
     async function adicionarEvento() {
         try {
@@ -66,7 +67,7 @@ const ModalNovoEvento = ({pVisible, pFecharModal, fotoUsuario, pNome, pEndereco,
     } 
 
     const salvar = () =>{
-        if(selectedValueHoraFinal != '' && descricaoEvento != ''){
+        if(selectedValueHoraFinal != ''){
             adicionarEvento()
             setSelectedValueHoraFinal('')
             setDescricaoEvento('')
@@ -112,7 +113,7 @@ const ModalNovoEvento = ({pVisible, pFecharModal, fotoUsuario, pNome, pEndereco,
                                 onBlur={() => setIsFocusHoraFinal(false)}
                             />
                             <Text style={{color:corCinzaSecundaria, fontSize: 13, marginLeft: 20, marginTop: 20}}>Defina uma descrição</Text>
-                            <TextInput style={styles.modelCampoInfos} multiline value={descricaoEvento} onChangeText={(text) => {setDescricaoEvento(text)}} placeholder='Descrição Evento' placeholderTextColor={corCinzaSecundaria}/>
+                            <TextInput editable={false} style={styles.modelCampoInfos} multiline value={pDescricao} onChangeText={(text) => {setDescricaoEvento(text)}} placeholder='Descrição Evento' placeholderTextColor={corCinzaSecundaria}/>
                         </View>
                         <TouchableOpacity onPress={salvar} style={{width:160, height:40, alignItems:'center', justifyContent:'center', borderColor: corVerdeIcon, borderWidth: 1, position:'absolute', bottom: '7%', right: '7%', borderRadius: 10}}>
                             <Text style={{color:corVerdeIcon, fontSize:18, fontWeight:'bold'}}>Salvar</Text>
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginLeft: 20,
         borderWidth: 1,
-        borderColor: corAmarela,
+        borderColor: corCinzaSecundaria,
         borderRadius: 10,
         color: 'white',
         padding: 10 

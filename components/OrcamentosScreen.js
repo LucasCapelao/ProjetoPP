@@ -11,13 +11,12 @@ const OrcamentosScreen = ({ navigation }) => {
     const [situacao,setSituacao] = useState('1')
     const [filtro,setFiltro] = useState('a.data asc')
     const [orcamentos,setOrcamentos] = useState([])
-    const [reload,setReload] = useState(false)
     const [refreshing, setRefreshing] = useState(false);
     const [fotoPerfil, setFotoPerfil] = useState({});
 
     const alterarSituacao = (situacao) =>{
         setSituacao(situacao)
-        setReload(true)
+        setRefreshing(true)
     }
 
     const mudarFiltro = () =>{
@@ -26,7 +25,7 @@ const OrcamentosScreen = ({ navigation }) => {
         }else{
             setFiltro('a.data asc')
         }
-        setReload(true)
+        setRefreshing(true)
     }
 
     async function buscaOrcamentos() {
@@ -41,36 +40,46 @@ const OrcamentosScreen = ({ navigation }) => {
             });
             const data = await response.json();
             setOrcamentos(data)
-            setReload(prevReload => !prevReload);
         } catch (error) {
-            console.error('Consulta erro busca orcamentos:', error);
+            console.error('Erro ao buscar orcamentos:', error);
+        } finally {
+            setRefreshing(false); // Finaliza o indicador de atualização
         }
     }
 
     useEffect(() => {
-        buscaOrcamentos().then(() => setRefreshing(false))
-    }, [reload]);
+        buscaOrcamentos()
+    }, [situacao,filtro]);
 
     useEffect(() => {
         const carregarFotos = async () => {
+            if (orcamentos.length === 0) return;
+
             const fotos = {};
             await Promise.all(
                 orcamentos.map(async (orcamento, index) => {
-                    const url = await buscarImagem(orcamento[10]); // Busca a URL da imagem passando o orcamento[10]
-                    fotos[index] = url; // Armazena no objeto `fotos`
+                    const refImage = orcamento[10]; 
+                    if (refImage) {
+                        try {
+                            const url = await buscarImagem(refImage);
+                            fotos[index] = url;
+                        } catch (error) {
+                            console.error(`Erro ao carregar a imagem ${index}:`, error);
+                        }
+                    } else {
+                        console.warn(`Orcamentos ${index} não contém referência de imagem válida`);
+                    }
                 })
             );
-            setFotoPerfil(fotos); // Atualiza o estado com todas as URLs
+            setFotoPerfil(fotos);
         };
 
-        if (orcamentos.length > 0) {
-            carregarFotos();
-        }
+        carregarFotos();
     }, [orcamentos]);
 
     const onRefresh = () => {
         setRefreshing(true);
-        setReload(prevReload => !prevReload); 
+        buscaOrcamentos();
     };
 
     return (

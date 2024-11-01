@@ -1,13 +1,20 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
 import { corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria, userIcon } from '../src/Constants/Constantes';
 import { calcularIdade } from '../src/functions/CalculaIdade.js';
 import NumberInCategoryIcon from '../src/functions/NumberInCategoryIcon.js';
 import {NumberInCategory} from '../src/functions/NumberInCategory.js'
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
+import { ModalViewImage } from './ModalViewImage.js';
 
 
 export const DetailsPrestante = ({ navigation, route }) => {
+    const [modalImagem,setModalImagem] = useState(false)
+
+    const fecharModal = () =>{
+        setModalImagem(false)
+    }
+    
     const { nome } = route.params;
     const { sobrenome } = route.params;
     const { dataNascimento } = route.params;
@@ -27,7 +34,14 @@ export const DetailsPrestante = ({ navigation, route }) => {
     return (
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
             <View style={{width: '90%', height: 170, backgroundColor: corCinzaPrincipal, marginTop: '10%', borderRadius: 10, flexDirection: 'row', alignItems:'center'}}>
-                <Image source={{ uri:fotoPerfil }} style={{width: '35%', height: 120, marginLeft: 20, borderRadius: 10}} />
+                <Pressable style={{width: '35%', height: 120, marginLeft: 20, borderRadius: 10}} onPress={()=>setModalImagem(true)}>
+                    <Image source={{ uri:fotoPerfil }} style={{width:'100%', height:'100%', borderRadius: 10}} />
+                </Pressable>
+                <ModalViewImage 
+                    pVisible={modalImagem}
+                    pFecharModal={fecharModal}
+                    pImage={fotoPerfil}
+                />
                 <View style={{padding: 15, height: 120, width: '65%'}}>
                     <Text style={{color: corAmarela, fontSize: 16}}><Text style={{color: corAmarela, fontSize: 18, fontWeight: 'bold'}}>{nome}</Text> {sobrenome}</Text>
                     <Text style={{color: corAmarela, fontSize: 18, fontWeight: 'bold'}}>{calcularIdade(dataNascimento)} Anos<Text style={{color: corCinzaSecundaria, fontSize: 12}}> ({dataNascimento})</Text></Text> 

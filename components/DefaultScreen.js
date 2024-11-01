@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
 
-const DefaultScreen = ({ navigation }) => {
+export const DefaultScreen = ({ navigation }) => {
     return (
         <View style={{ flex: 1, backgroundColor: 'black', alignItems:'center' }}>
         
@@ -12,5 +12,3 @@ const DefaultScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 
 });
-
-export default DefaultScreen;

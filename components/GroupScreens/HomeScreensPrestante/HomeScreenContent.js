@@ -5,9 +5,6 @@ import { View, Text, Button, StyleSheet, TouchableHighlight, TouchableOpacity, I
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import {getAuth, signOut } from 'firebase/auth';
 import { corAmarela, IpAtual, corCinzaPrincipal, corCinzaSecundaria } from '../../../src/Constants/Constantes';
-import { uploadImageAsync, salvarImagem, uploadImageToStorage } from '../../../firebaseConnection';
-import * as ImagePicker from 'expo-image-picker';
-import ModalNovoEvento from '../../ModalNovoEvento';
 
 
 const imgFirebase = require('../../../assets/4.png')
@@ -16,28 +13,6 @@ const auth = getAuth();
 
 export default function HomeScreenContent ({ navigation, route }) {
   const idFirebase = window.idFirebaseGlobal;
-  const [image, setImage] = useState(null);
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Allow selection of all media types (images, videos)
-      allowsEditing: true, // Allow the user to edit the selected image
-      aspect: [4, 3], // Set the aspect ratio for editing (optional)
-      quality: 1, // Set the image quality (1 is the highest)
-    });
-  
-    if (!result.canceled && result.assets[0].uri) {
-      // Check if the user didn't cancel the selection and an image URI is available
-      console.log('Selected image URI:', result.assets[0].uri);
-  
-      try {
-        const downloadURL = await uploadImageToStorage(result.assets[0].uri, idFirebase);
-        console.log('Image uploaded successfully. Download URL:', downloadURL);
-      } catch (error) {
-        console.error('Upload failed:', error);
-      }
-    }
-  };
    
     const logout =()=>{
       signOut(auth).then(() => {
@@ -105,7 +80,7 @@ export default function HomeScreenContent ({ navigation, route }) {
             <Text style={{fontSize: 36, fontWeight: 'bold'}}>{indicadorServicos}</Text>
           </View>
           <View style={styles.lineOptions}>
-            <TouchableOpacity style={styles.boxLineOptions} onPress={()=>{navigation.navigate('AvaliacoesScreen')}}>
+            <TouchableOpacity style={styles.boxLineOptions} onPress={()=>{navigation.navigate('AvaliacoesScreen',{telaOrigem:''})}}>
               <FontAwesome name="star" size={36} color={corAmarela} />
               <Text style={{color: corAmarela}}>Avaliações</Text>
             </TouchableOpacity>

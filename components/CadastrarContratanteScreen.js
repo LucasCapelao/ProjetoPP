@@ -17,6 +17,29 @@ const db = getFirestore(app);
 console.disableYellowBox = true;
 
 const CadastrarInfosScreen = ({ navigation, route }) => {
+    const { idFirebaseParametro } = route.params;
+    console.log(idFirebaseParametro);
+    const { emailParametro } = route.params;
+    console.log(emailParametro);
+    const { capturedImage } = route.params || {};
+    const [isFocusGenero, setIsFocusGenero] = useState(false);
+    const [modalCalendario, setModalCalendario] = useState(false);
+    const [date, setDate] = useState(new Date());
+    const [btnConfirmarData, setBtnConfirmarData] = useState(false);
+    const [cpf,setCpf] = useState('');
+    const [telefone,setTelefone] = useState('');
+    const [email,setEmail] = useState(emailParametro);
+    const [nome, setNome] = useState(null);
+    const [sobrenome, setSobrenome] = useState(null);
+    const [cep, setCep] = useState(null);
+    const [uf, setUf] = useState(null);
+    const [municipio, setMunicipio] = useState(null);
+    const [bairro, setBairro] = useState(null);
+    const [logradouro, setLogradouro] = useState(null);
+    const [numero, setNumero] = useState(null);
+    const [complemento, setComplemento] = useState(null);
+
+
     const backScreen = () =>{
         navigation.goBack()
     }    
@@ -52,28 +75,6 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         buscaGenero();
     }, []);
 
-    const { idFirebaseParametro } = route.params;
-    console.log(idFirebaseParametro);
-    const { emailParametro } = route.params;
-    console.log(emailParametro);
-    const { capturedImage } = route.params || {};
-    const [isFocusGenero, setIsFocusGenero] = useState(false);
-    const [modalCalendario, setModalCalendario] = useState(false);
-    const [date, setDate] = useState(new Date());
-    const [btnConfirmarData, setBtnConfirmarData] = useState(false);
-    const [cpf,setCpf] = useState('');
-    const [telefone,setTelefone] = useState('');
-    const [email,setEmail] = useState(emailParametro);
-    const [nome, setNome] = useState(null);
-    const [sobrenome, setSobrenome] = useState(null);
-    const [cep, setCep] = useState(null);
-    const [uf, setUf] = useState(null);
-    const [municipio, setMunicipio] = useState(null);
-    const [bairro, setBairro] = useState(null);
-    const [logradouro, setLogradouro] = useState(null);
-    const [numero, setNumero] = useState(null);
-    const [complemento, setComplemento] = useState(null);
-
     async function apiBuscaCep(){
         try{
             const response = await buscaCep.get(`/${cep}/json/`);
@@ -106,20 +107,6 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
             setModalCalendario(false);
         }
     }  
-
-    // const adicionarUsuario = async () => {
-    //     try {
-    //       const usersCollection = collection(db, 'users');
-    //       const usuarioRef = await addDoc(usersCollection, {
-    //         first: 'Ada',
-    //         last: 'Lovelace',
-    //         born: 1815,
-    //       });
-    //       console.log('Usuário adicionado com ID:', usuarioRef.id);
-    //     } catch (error) {
-    //       console.error('Erro ao adicionar usuário:', error.message);
-    //     }
-    //   };
 
     async function inserirCadastro() {
         try {
@@ -154,57 +141,7 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         }catch (error) {
           console.error('Erro ao cadastrar pessoas:', error);
         }
-      }
-
-        async function inserirCadastro2() {
-            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && cep != '' && uf != '' && municipio != '' && bairro != '' && logradouro != '' && numero != '' && telefone != '' && email != ''){
-                try {
-                    const idFirebaseDB = idFirebaseParametro;
-                    const nomeDB = nome;
-                    const sobrenomeDB = sobrenome;
-                    const generoDB = selectedValueGenero;
-                    const dataNascimentoDB = formatarDataDB(date);
-                    const cpfDB = formatarCpfDB(cpf);
-                    const cepDB = formatarCep(cep);
-                    const ufDB = uf;
-                    const municipioDB = municipio;
-                    const bairroDB = bairro;
-                    const ruaDB = logradouro;
-                    const numeroDB = numero;
-                    const complementoDB = complemento;
-                    const foneDB = formatarFone(telefone);
-                    const emailDB = email;
-                    const response = await fetch(`http://${IpAtual}:3003/insertContratante`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB })
-                    });
-                    console.log(JSON.stringify(response))
-                }catch (error) {
-                    console.error('Erro ao cadastrar contratante:', error);
-                }
-            }else{
-                alert("Preencha todos os campos");
-            }
-        }
-
-        async function query() {
-            try {
-                const nome = 'Lucas'
-                const response = await fetch(`http://${IpAtual}:3003/query?nome=${nome}`, {
-                    method: 'GET',
-                    headers: {
-                    'Content-Type': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                console.log('Resultado da consulta:', data);
-            } catch (error) {
-                console.error('Consulta erro query:', error);
-            }
-        }
+    }
 
     return(
         <View style={styles.container}>

@@ -105,10 +105,10 @@ export default function LoginScreen({navigation,route}) {
         </TouchableWithoutFeedback>
         <View style={styles.containerBtn}>
             <TouchableHighlight style={styles.btnLoginCinza} onPress={functionLogin}>
-            <Text style={styles.textBtnCinza}>Entrar</Text>
+                <Text style={styles.textBtnCinza}>Entrar</Text>
             </TouchableHighlight> 
             <TouchableHighlight style={styles.btnLoginAmarelo} onPress={functionCadastro}>
-            <Text style={styles.textBtnAmarelo}>Cadastre-se</Text>
+                <Text style={styles.textBtnAmarelo}>Cadastre-se</Text>
             </TouchableHighlight>      
         </View>
         <Modal style={styles.modal} animationType='slide' visible={modalErro} transparent={true}>

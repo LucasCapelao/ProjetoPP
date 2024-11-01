@@ -1,11 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
 import { corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria, corVerdeIcon, userIcon } from '../src/Constants/Constantes';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { ModalViewImage } from './ModalViewImage';
 
 export const ItemOrcamento = ({ navigation, dia, mes, horaInicio, horaFinal, valor, nome, media, avaliacoes, fotoPerfil }) => {
     function goToDetails(){
         // navigation.navigate('DetailsOrcamento')
+    }
+
+    const [modalImagem,setModalImagem] = useState(false)
+
+    const fecharModal = () =>{
+        setModalImagem(false)
     }
 
     return (
@@ -21,7 +28,14 @@ export const ItemOrcamento = ({ navigation, dia, mes, horaInicio, horaFinal, val
                 <Text style={{color:corVerdeIcon, fontSize: 18, fontWeight: 'bold', marginLeft: 10}}>R$ {valor}</Text>
             </View>
             <View style={{width: '92%', marginTop: 10, flexDirection: 'row'}}>
-                <Image source={{uri: fotoPerfil}} style={{width: 40, height: 40, borderRadius: 10}} />
+                <Pressable onPress={()=>setModalImagem(true)}>
+                    <Image source={{uri: fotoPerfil}} style={{width: 40, height: 40, borderRadius: 10}} />
+                </Pressable>
+                <ModalViewImage 
+                    pVisible={modalImagem}
+                    pFecharModal={fecharModal}
+                    pImage={fotoPerfil}
+                />
                 <View style={{marginLeft: 12}}>
                     <Text style={{color:'white', fontSize: 16}}>{nome}</Text>
                     <Text style={{color: corCinzaSecundaria}}>{media} | {avaliacoes} Avaliações</Text>

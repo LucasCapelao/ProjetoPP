@@ -9,8 +9,6 @@ import { buscarImagem } from '../firebaseConnection';
 const SolicitacoesContratanteScreen = ({ navigation }) => {
     const [situacao,setSituacao] = useState('P')
     const [solicitacoes,setSolicitacoes] = useState([])
-    const [reload,setReload] = useState(false)
-    const [carregarImagens,setCarregarImagens] = useState(false)
     const [refreshing, setRefreshing] = useState(false);
     const [fotoPerfil, setFotoPerfil] = useState({});
 
@@ -86,11 +84,11 @@ const SolicitacoesContratanteScreen = ({ navigation }) => {
             setSolicitacoes(prevSolicitacoes =>
               prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
             );
-      
-            setReload(prevReload => !prevReload);
             console.log('Resultado da consulta:', data);
         } catch (error) {
-            console.error('erro ao update solicitacoes:', error);
+            console.error('Erro ao update solicitações:', error);
+        } finally {
+            setRefreshing(false); // Finaliza o indicador de atualização
         }
     }
 
@@ -107,10 +105,11 @@ const SolicitacoesContratanteScreen = ({ navigation }) => {
             setSolicitacoes(prevSolicitacoes =>
               prevSolicitacoes.filter(solicitacao => solicitacao[10] !== pId)
             );
-            setReload(prevReload => !prevReload);
             console.log('Resultado da consulta:', data);
         } catch (error) {
-            console.error('erro ao update solicitacoes:', error);
+            console.error('Erro ao update solicitações:', error);
+        } finally {
+            setRefreshing(false); // Finaliza o indicador de atualização
         }
       }
 
@@ -153,6 +152,16 @@ const SolicitacoesContratanteScreen = ({ navigation }) => {
                         navigation={navigation}
                         nome={`${solicitacao[0]} ${solicitacao[1]}`}
                         fotoPerfil={fotoPerfil[index]}
+                        dia={solicitacao[8].substring(8,10)}
+                        mes={NumberInMonth(parseInt(solicitacao[8].substring(5,7)),'N').toLowerCase()}
+                        endereco={`${solicitacao[2]}, ${solicitacao[3]}, ${solicitacao[4]}, ${solicitacao[5]} - ${solicitacao[7]}`}
+                        horario={`${solicitacao[9].substring(0,2)}:${solicitacao[9].substring(2,4)}`}            
+                        onUpdateAceitar={() => aceitaSolicitacao(solicitacao[10],`${solicitacao[0]} ${solicitacao[1]}`,`${solicitacao[2]}, ${solicitacao[3]}, ${solicitacao[4]}, ${solicitacao[5]} - ${solicitacao[7]}`,solicitacao[8].substring(8,10),NumberInMonth(parseInt(solicitacao[8].substring(5,7)),'S').toLowerCase(),`${solicitacao[9].substring(0,2)}:${solicitacao[9].substring(2,4)}`,solicitacao[12])}
+                        onUpdateRecusar={() => recusaSolicitacao(solicitacao[10])}
+                        idSolicitacao={solicitacao[10]}
+                        situacao={situacao}
+                        setRefresh={setRefreshing}
+                        setSituacao={setSituacao}
                     />
                 ))}
             </ScrollView>

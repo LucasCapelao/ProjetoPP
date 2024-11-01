@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableHighlight, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
 import { corAmarela, corCinzaPrincipal, corCinzaSecundaria, corCinzaTerciaria, userIcon } from '../src/Constants/Constantes';
 import NumberInCategoryIcon from '../src/functions/NumberInCategoryIcon';
 import { Entypo, MaterialIcons, MaterialCommunityIcons, FontAwesome, Octicons, Ionicons, FontAwesome5, AntDesign, Feather } from '@expo/vector-icons';
 
-
 export const CardPrestante = ({ navigation, fotoPerfil, nome, sobrenome, dataNascimento, especialidade, avaliacoes, media, idFirebasePrestante }) => {
+
     return (
         <TouchableOpacity onPress={()=>navigation.navigate('DetailsPrestante',{nome:nome,sobrenome:sobrenome,dataNascimento:dataNascimento,avaliacoes:avaliacoes,media:media,idFirebasePrestante:idFirebasePrestante,especialidade:especialidade,fotoPerfil:fotoPerfil})} style={{ backgroundColor: corCinzaPrincipal, alignItems:'center', width: '100%', height: 130, borderRadius: 10 }}>
             <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', margin: 10}}>

@@ -1,9 +1,27 @@
 const express = require('express');
 const oracledb = require('oracledb');
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express')
+const swaggerJsDoc = require('swagger-jsdoc');
+
 
 const app = express();
 app.use(bodyParser.json());
+
+const swaggerOptions = {
+    swaggerDefinition: {
+      openapi: "3.0.0",
+      info:{
+        title: "Rotas API PP",
+        version: "1.0.0",
+        description: "Api CRUD do Projeto"
+      },
+      server: [{ url: "http://localhost:3003" }],
+    },
+    apis: [`server.js`]
+}
+const swaggerDocs = swaggerJsDoc(swaggerOptions)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 const dbConfig = {
     user: 'SYSTEM',
@@ -26,33 +44,30 @@ app.get('/buscaTipoUsuario', async (req, res) => {
   }
 });
 
-app.post('/insertPrestante', async (req, res) => {
-  try {
-    const { idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB } = req.body;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`INSERT INTO PRESTANTES (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, graduacao, especialidade, fone, email) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :graduacao, :especialidade, :fone, :email)`, {idFirebase: idFirebaseDB, nome: nomeDB, sobrenome: sobrenomeDB, genero: generoDB, dataNascimento: dataNascimentoDB, cpf: cpfDB, graduacao: graduacaoDB, especialidade: especialidadeDB, fone: foneDB, email: emailDB});
-    connection.commit();
-    await connection.close();
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Erro ao cadastrar:', error);
-    res.status(500).json({ error: 'Erro ao cadastrar.' });
-  }
-});
-
-app.post('/insertContratante', async (req, res) => {
-  try {
-    const { idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, cepDB, ufDB, municipioDB, bairroDB, ruaDB, numeroDB, complementoDB, foneDB, emailDB } = req.body;
-    const connection = await oracledb.getConnection(dbConfig);
-    const result = await connection.execute(`INSERT INTO CONTRATANTES (idFirebase, nome, sobrenome, genero, dataNascimento, cpf, cep, uf, municipio, bairro, rua, numero, complemento, fone, email) VALUES (:idFirebase, :nome, :sobrenome, :genero, TO_DATE(:dataNascimento, 'DD-MM-YYYY'), :cpf, :cep, :uf, :municipio, :bairro, :rua, :numero, :complemento, :fone, :email)`, {idFirebase: idFirebaseDB, nome: nomeDB, sobrenome: sobrenomeDB, genero: generoDB, dataNascimento: dataNascimentoDB, cpf: cpfDB, cep: cepDB, uf: ufDB, municipio: municipioDB, bairro: bairroDB, rua: ruaDB, numero: numeroDB, complemento: complementoDB, fone: foneDB, email: emailDB});
-    connection.commit();
-    await connection.close();
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Erro ao cadastrar:', error);
-    res.status(500).json({ error: 'Erro ao cadastrar.' });
-  }
-});
+/**
+ * @swagger
+ * /buscaTipoUsuario:
+ *   get:
+ *     summary: Busca tipo do usuário
+ *     parameters:
+ *       - in: query
+ *         name: idFirebase
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário a ser buscado
+ *     responses:
+ *       200:
+ *         description: Tabela PESSOAS
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               properties:
+ *                 tipoUsuario:
+ *                   type: string
+ *                   example: Contratante
+ */
 
 app.get('/buscaGenero', async (req, res)=>{
   try {
@@ -92,7 +107,7 @@ app.get('/buscaGraduacao', async (req, res)=>{
 
 app.get('/buscaSolicitacoes', async (req, res) => {
   try {
-    const { idFirebase } = req.query;
+    const { idFirebase, situacao } = req.query;
     const connection = await oracledb.getConnection(dbConfig);
     // const sqlStatement = `SELECT * FROM SOLICITACOES a WHERE a.id_prestante = (SELECT b.id FROM PESSOAS b WHERE b.idFirebase = '${idFirebase}')`;
     const sqlStatement = `
@@ -109,14 +124,16 @@ app.get('/buscaSolicitacoes', async (req, res) => {
         a.horaServico,
         a.id,
         a.situacao,
-        a.idEndereco
+        a.idEndereco,
+        c.fotoPerfil,
+        a.descricao
       FROM SOLICITACOES a 
       JOIN PESSOAS b ON a.idPrestante = b.id
       JOIN PESSOAS c ON a.idContratante = c.id
       JOIN ENDERECOS e ON e.id = a.idEndereco
       WHERE a.idPrestante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
-      AND a.situacao = 'P'
-      ORDER BY a.dataServico, a.dataEnviado`;
+      AND a.situacao = '${situacao}'
+      ORDER BY a.dataServico, TO_NUMBER(a.horaServico), a.dataEnviado`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -450,7 +467,7 @@ app.get('/buscaSolicitacoesContratante', async (req, res) => {
       JOIN ENDERECOS e ON e.id = a.idEndereco
       WHERE a.idContratante = (SELECT pess.id FROM PESSOAS pess WHERE pess.idFirebase = '${idFirebase}')
       AND a.situacao = '${situacao}'
-      ORDER BY a.dataServico, a.dataEnviado`;
+      ORDER BY a.dataServico, TO_NUMBER(a.horaServico), a.dataEnviado`;
     const result = await connection.execute(sqlStatement);
     console.log('Resultado da consulta server.js:', result.rows);
     await connection.close();
@@ -458,6 +475,21 @@ app.get('/buscaSolicitacoesContratante', async (req, res) => {
   } catch (error) {
     console.error('Erro ao executar consulta:', error);
     res.status(500).json({ error: 'Erro ao executar consulta.' });
+  }
+});
+
+app.put('/atualizaSolicitacao', async (req, res) => {
+  try {
+    const { dataServico, horaServico, dataEnviado, id } = req.query;
+    const connection = await oracledb.getConnection(dbConfig);
+    const sqlStatement = `UPDATE SOLICITACOES SET dataServico = TO_DATE('${dataServico}','DD-MM-YYYY'), horaServico = '${horaServico}', dataEnviado = TO_DATE('${dataEnviado}','DD-MM-YYYY'), situacao = 'E' WHERE id = ${id}`
+    const result = await connection.execute(sqlStatement);
+    connection.commit();
+    await connection.close();
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Erro update solicitacao:', error);
+    res.status(500).json({ error: 'Erro update solicitacao' });
   }
 });
 

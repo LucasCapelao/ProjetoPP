@@ -45,6 +45,24 @@ const uploadImageToFirebase = async (uri) => {
   uploadImageToFirebase(logoIntroducao)
 
 const CadastrarInfosScreen = ({ navigation, route }) => {
+    const { idFirebaseParametro } = route.params;
+    console.log(idFirebaseParametro);
+    const { emailParametro } = route.params;
+    console.log(emailParametro);
+    const { capturedImage } = route.params || {};
+    const [isFocusGenero, setIsFocusGenero] = useState(false);
+    const [isFocusGraduacao, setIsFocusGraduacao] = useState(false);
+    const [isFocusEspecialidade, setIsFocusEspecialidade] = useState(false);
+    const [modalCalendario, setModalCalendario] = useState(false);
+    const [date, setDate] = useState(new Date());
+    const [btnConfirmarData, setBtnConfirmarData] = useState(false);
+    const [cpf,setCpf] = useState('');
+    const [telefone,setTelefone] = useState('');
+    const [email,setEmail] = useState(emailParametro);
+    const [nome, setNome] = useState(null);
+    const [sobrenome, setSobrenome] = useState(null);
+
+
     const backScreen = () =>{
         navigation.goBack()
     }    
@@ -127,23 +145,6 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
         buscaGraduacao();
     }, []);
 
-    const { idFirebaseParametro } = route.params;
-    console.log(idFirebaseParametro);
-    const { emailParametro } = route.params;
-    console.log(emailParametro);
-    const { capturedImage } = route.params || {};
-    const [isFocusGenero, setIsFocusGenero] = useState(false);
-    const [isFocusGraduacao, setIsFocusGraduacao] = useState(false);
-    const [isFocusEspecialidade, setIsFocusEspecialidade] = useState(false);
-    const [modalCalendario, setModalCalendario] = useState(false);
-    const [date, setDate] = useState(new Date());
-    const [btnConfirmarData, setBtnConfirmarData] = useState(false);
-    const [cpf,setCpf] = useState('');
-    const [telefone,setTelefone] = useState('');
-    const [email,setEmail] = useState(emailParametro);
-    const [nome, setNome] = useState(null);
-    const [sobrenome, setSobrenome] = useState(null);
-
     const [selectedValueGenero, setSelectedValueGenero] = useState('');
     const handleSelectGenero = (item, index) => {
       console.log("Valor selecionado:", item.value);
@@ -175,66 +176,36 @@ const CadastrarInfosScreen = ({ navigation, route }) => {
             setModalCalendario(false);
         }
     }
-      
-    // const adicionarUsuario = async () => {
-    //     try {
-    //       const usersCollection = collection(db, 'users');
-    //       const usuarioRef = await addDoc(usersCollection, {
-    //         first: 'Ada',
-    //         last: 'Lovelace',
-    //         born: 1815,
-    //       });
-    //       console.log('Usuário adicionado com ID:', usuarioRef.id);
-    //     } catch (error) {
-    //       console.error('Erro ao adicionar usuário:', error.message);
-    //     }
-    //   };
 
-        async function inserirCadastro() {
-            if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && telefone != '' && email != ''){
-                try {
-                    const idFirebaseDB = idFirebaseParametro;
-                    const nomeDB = nome;
-                    const sobrenomeDB = sobrenome;
-                    const generoDB = selectedValueGenero;
-                    const dataNascimentoDB = formatarDataDB(date);
-                    const cpfDB = formatarCpfDB(cpf);
-                    const graduacaoDB = selectedValueGraduacao;
-                    const especialidadeDB = selectedValueEspecialidade;
-                    const foneDB = formatarFone(telefone);
-                    const emailDB = email;
-                    const response = await fetch(`http://${IpAtual}:3003/insertPrestante`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB })
-                    });
-                    // console.log(response)
-                }catch (error) {
-                    console.error('Erro ao cadastrar:', error);
-                }
-            }else{
-                alert("Preencha todos os campos");
-            }
-        }
-
-        async function query() {
+    async function inserirCadastro() {
+        if(nome != null && sobrenome != null && selectedValueGenero != '' && date != '' && cpf != '' && selectedValueEspecialidade != '' && selectedValueGraduacao != '' && telefone != '' && email != ''){
             try {
-                const nome = 'Lucas'
-                const response = await fetch(`http://${IpAtual}:3003/query?nome=${nome}`, {
-                    method: 'GET',
-                    headers: {
+                const idFirebaseDB = idFirebaseParametro;
+                const nomeDB = nome;
+                const sobrenomeDB = sobrenome;
+                const generoDB = selectedValueGenero;
+                const dataNascimentoDB = formatarDataDB(date);
+                const cpfDB = formatarCpfDB(cpf);
+                const graduacaoDB = selectedValueGraduacao;
+                const especialidadeDB = selectedValueEspecialidade;
+                const foneDB = formatarFone(telefone);
+                const emailDB = email;
+                const response = await fetch(`http://${IpAtual}:3003/insertPrestante`, {
+                method: 'POST',
+                headers: {
                     'Content-Type': 'application/json'
-                    }
+                },
+                body: JSON.stringify({ idFirebaseDB, nomeDB, sobrenomeDB, generoDB, dataNascimentoDB, cpfDB, graduacaoDB, especialidadeDB, foneDB, emailDB })
                 });
-                const data = await response.json();
-                console.log('Resultado da consulta:', data);
-            } catch (error) {
-                console.error('Consulta erro:', error);
+                // console.log(response)
+            }catch (error) {
+                console.error('Erro ao cadastrar:', error);
             }
+        }else{
+            alert("Preencha todos os campos");
         }
-
+    }
+    
     return(
         <View style={styles.container}>
             <View style={styles.headerScreen}>
